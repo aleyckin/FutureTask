@@ -14,5 +14,6 @@ namespace Domain.RepositoryInterfaces
         IUserRepository UserRepository { get; }
         ISpecializationRepository SpecializationRepository { get; }
         ITaskRepository TaskRepository { get; }
+        IUnitOfWork UnitOfWork { get; }
     }
 }
