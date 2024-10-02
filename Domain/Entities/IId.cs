@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class Column : IId
+    public abstract class IId
     {
-        public string Title { get; set; } = string.Empty;
-
-        public Guid ProjectId { get; set; }
+        public Guid Id { get; set; }
     }
 }

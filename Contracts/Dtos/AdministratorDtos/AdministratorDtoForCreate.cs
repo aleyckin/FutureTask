@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Entities
+namespace Contracts.Dtos.AdministratorDtos
 {
-    public class Administrator : IId
+    public class AdministratorDtoForCreate
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-
-        public List<Project> Projects { get; set; } = new List<Project>();
     }
 }
