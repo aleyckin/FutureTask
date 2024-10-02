@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    class Administrator
+    public class Administrator
     {
         public Guid Id { get; set; }
         public string Email { get; set; } = string.Empty;
