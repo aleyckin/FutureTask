@@ -1,4 +1,5 @@
-﻿using Contracts.Dtos.ProjectDtos;
+﻿using Contracts.Dtos.ColumnDtos;
+using Contracts.Dtos.ProjectDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace Services.Abstractions
 {
     public interface IColumnService
     {
-        Task<List<ProjectDto>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<ProjectDto> GetProjectById(Guid projectId, CancellationToken cancellationToken = default);
-        Task<ProjectDto> CreateAsync(ProjectDtoForCreate projectDtoForCreate, CancellationToken cancellationToken = default);
-        Task UpdateAsync(Guid projectId, ProjectDtoForUpdate projectDtoForUpdate, CancellationToken cancellationToken = default);
-        Task DeleteAsync(Guid projectId, CancellationToken cancellationToken = default);
+        Task<List<ColumnDto>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<ColumnDto> GetColumnById(Guid columnId, CancellationToken cancellationToken = default);
+        Task<ColumnDto> CreateAsync(ColumnDtoForCreate columnDtoForCreate, CancellationToken cancellationToken = default);
+        Task UpdateAsync(Guid columnId, ColumnDtoForUpdate columnDtoForUpdate, CancellationToken cancellationToken = default);
+        Task DeleteAsync(Guid columnId, CancellationToken cancellationToken = default);
     }
 }

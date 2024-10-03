@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.UserDtos;
+using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -21,29 +22,57 @@ namespace Services.Services
             _mapper = mapper;
         }
 
-        public Task<UserDto> CreateAsync(UserDtoForCreate userDtoForCreate, CancellationToken cancellationToken = default)
+        public async Task<UserDto> CreateAsync(UserDtoForCreate userDtoForCreate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var user = _mapper.Map<User>(userDtoForCreate);
+            _repositoryManager.UserRepository.Insert(user);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            return _mapper.Map<UserDto>(user);
         }
 
-        public Task DeleteAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async System.Threading.Tasks.Task DeleteAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            if (user == null)
+            {
+                throw new Exception();
+            }
+            _repositoryManager.UserRepository.Remove(user);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        public Task<List<UserDto>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<List<UserDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var users = await _repositoryManager.UserRepository.GetAllUsersAsync(cancellationToken);
+            return _mapper.Map<List<UserDto>>(users);
         }
 
-        public Task<UserDto> GetUserById(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<UserDto> GetUserById(Guid userId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            return _mapper.Map<UserDto>(user);
         }
 
-        public Task UpdateAsync(Guid userId, UserDtoForUpdate userDtoForUpdate, CancellationToken cancellationToken = default)
+        public async System.Threading.Tasks.Task UpdateAsync(Guid userId, UserDtoForUpdate userDtoForUpdate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            if (user == null)
+            {
+                throw new Exception();
+            }
+            if (userDtoForUpdate.Email != null)
+            {
+                user.Email = userDtoForUpdate.Email;
+            }
+            if (userDtoForUpdate.Password != null)
+            {
+                user.Password = userDtoForUpdate.Password;
+            }
+            if (userDtoForUpdate.SpecializationId != Guid.Empty)
+            {
+                user.SpecializationId = userDtoForUpdate.SpecializationId;
+            }
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }
