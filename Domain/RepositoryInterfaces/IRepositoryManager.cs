@@ -9,7 +9,7 @@ namespace Domain.RepositoryInterfaces
     public interface IRepositoryManager
     {
         IAdministratorRepository AdministratorRepository { get; }
-        //IProjectRepository ProjectRepository { get; }
+        IProjectRepository ProjectRepository { get; }
         IUnitOfWork UnitOfWork { get; }
     }
 }

@@ -9,6 +9,8 @@ namespace Persistance
         public DbSet<Administrator> Administrators { get; set; }
         public DbSet<Project> Projects { get; set; }
 
+        public DbSet<ProjectUsers> ProjectUsers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(RepositoryDbContext).Assembly);

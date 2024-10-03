@@ -14,7 +14,7 @@ namespace Persistence.Repositories
         private readonly IUnitOfWork _unitOfWork;
 
         private IAdministratorRepository _administratorRepository;
-        //private IProjectRepository _projectRepository;
+        private IProjectRepository _projectRepository;
 
         public RepositoryManager(RepositoryDbContext dbContext, IUnitOfWork unitOfWork)
         {
@@ -24,7 +24,7 @@ namespace Persistence.Repositories
 
         public IAdministratorRepository AdministratorRepository => _administratorRepository ??= new AdministratorRepository(_dbContext);
 
-        //public IProjectRepository ProjectRepository => _projectRepository ??= new ProjectRepository(_dbContext);
+        public IProjectRepository ProjectRepository => _projectRepository ??= new ProjectRepository(_dbContext);
 
         public IUnitOfWork UnitOfWork => _unitOfWork;
     }

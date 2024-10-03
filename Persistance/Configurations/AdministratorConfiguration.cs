@@ -15,8 +15,8 @@ namespace Persistence.Configurations
         {
             builder.HasKey(administrator => administrator.Id);
             builder.Property(administrator => administrator.Id).ValueGeneratedOnAdd();
-            builder.Property(administrator => administrator.Email).HasMaxLength(30);
-            builder.Property(administrator => administrator.Password).HasMaxLength(30);
+            builder.Property(administrator => administrator.Email).HasMaxLength(30).IsRequired();
+            builder.Property(administrator => administrator.Password).HasMaxLength(30).IsRequired();
             builder.HasMany(administrator => administrator.Projects)
                 .WithOne()
                 .HasForeignKey(project => project.AdministratorId)

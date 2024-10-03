@@ -13,11 +13,15 @@ namespace Services.Services
     {
         private readonly Lazy<IAdministratorService> _lazyAdministratorService;
 
+        private readonly Lazy<IProjectService> _lazyProjectService;
+
         public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper)
         { 
             _lazyAdministratorService = new Lazy<IAdministratorService>(() => new AdministratorService(repositoryManager, mapper));
+            _lazyProjectService = new Lazy<IProjectService>(() => new ProjectService(repositoryManager, mapper));
         }
 
         public IAdministratorService AdministratorService => _lazyAdministratorService.Value;
+        public IProjectService ProjectService => _lazyProjectService.Value;
     }
 }

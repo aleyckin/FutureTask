@@ -1,4 +1,6 @@
-﻿using Contracts.Dtos.ProjectDtos;
+﻿using AutoMapper;
+using Contracts.Dtos.ProjectDtos;
+using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,15 @@ namespace Services.Services
 {
     public class ProjectService : IProjectService
     {
+        private readonly IRepositoryManager repositoryManager;
+        private readonly IMapper mapper;
+
+        public ProjectService(IRepositoryManager repositoryManager, IMapper mapper)
+        {
+            this.repositoryManager = repositoryManager;
+            this.mapper = mapper;
+        }
+
         public Task<ProjectDto> CreateAsync(ProjectDtoForCreate projectDtoForCreate, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
