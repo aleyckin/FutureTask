@@ -1,7 +1,6 @@
 ﻿using Contracts.Dtos.ProjectDtos;
-using Contracts.Dtos.UserDtos;
 using Microsoft.AspNetCore.Mvc;
-using Services.Services;
+using Services.Abstractions;
 
 namespace Presentation.Controllers
 {
@@ -9,8 +8,8 @@ namespace Presentation.Controllers
     [Route("api/projects")]
     public class ProjectController : ControllerBase
     {
-        private readonly ServiceManager _serviceManager;
-        public ProjectController(ServiceManager serviceManager)
+        private readonly IServiceManager _serviceManager;
+        public ProjectController(IServiceManager serviceManager)
         {
             _serviceManager = serviceManager;
         }

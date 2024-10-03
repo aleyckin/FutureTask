@@ -1,7 +1,6 @@
 ﻿using Contracts.Dtos.TaskDtos;
-using Contracts.Dtos.UserDtos;
 using Microsoft.AspNetCore.Mvc;
-using Services.Services;
+using Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +13,8 @@ namespace Presentation.Controllers
     [Route("api/tasks")]
     public class TaskController : ControllerBase
     {
-        private readonly ServiceManager _serviceManager;
-        public TaskController(ServiceManager serviceManager)
+        private readonly IServiceManager _serviceManager;
+        public TaskController(IServiceManager serviceManager)
         {
             _serviceManager = serviceManager;
         }

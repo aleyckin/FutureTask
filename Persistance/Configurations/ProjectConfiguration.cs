@@ -17,6 +17,9 @@ namespace Persistence.Configurations
             builder.Property(project => project.Id).ValueGeneratedOnAdd();
             builder.Property(project => project.Name).HasMaxLength(20).IsRequired();
 
+            builder.HasMany(x => x.ProjectUsers)
+                .WithOne(x => x.Project)
+                .HasForeignKey(x => x.ProjectId);
         }
     }
 }

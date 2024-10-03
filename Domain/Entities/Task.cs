@@ -13,9 +13,11 @@ namespace Domain.Entities
         public string Description { get; set; } = string.Empty;
         public Status Status { get; set; }
         public Priority Priority { get; set; }
-        public DateTime DateCreated { get; set; }
+        public DateTime DateCreated { get; set; } = DateTime.Now;
         public DateTime DateEnd { get; set; }
         public Guid UserId { get; set; }
+        public User? User { get; set; }
         public Guid ColumnId { get; set; }
+        public Column? Column { get; set; }
     }
 }

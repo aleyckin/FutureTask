@@ -12,6 +12,7 @@ namespace Domain.Entities
         public string Password { get; set; } = string.Empty;
 
         public Guid SpecializationId { get; set; }
+        public Specialization Specialization { get; set; } = null!;
         
         public List<Domain.Entities.Task> Tasks { get; set; } = new List<Domain.Entities.Task> { };
 

@@ -1,6 +1,6 @@
 ﻿using Contracts.Dtos.UserDtos;
 using Microsoft.AspNetCore.Mvc;
-using Services.Services;
+using Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +13,9 @@ namespace Presentation.Controllers
     [Route("api/users")]
     public class UserController : ControllerBase
     {
-        private readonly ServiceManager _serviceManager;
+        private readonly IServiceManager _serviceManager;
 
-        public UserController(ServiceManager serviceManager)
+        public UserController(IServiceManager serviceManager)
         {
             _serviceManager = serviceManager;
         }

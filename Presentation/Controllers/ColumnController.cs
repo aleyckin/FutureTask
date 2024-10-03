@@ -1,7 +1,6 @@
 ﻿using Contracts.Dtos.ColumnDtos;
-using Contracts.Dtos.UserDtos;
 using Microsoft.AspNetCore.Mvc;
-using Services.Services;
+using Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +13,8 @@ namespace Presentation.Controllers
     [Route("api/columns")]
     public class ColumnController : ControllerBase
     {
-        private readonly ServiceManager _serviceManager;
-        public ColumnController(ServiceManager serviceManager)
+        private readonly IServiceManager _serviceManager;
+        public ColumnController(IServiceManager serviceManager)
         {
             _serviceManager = serviceManager;
         }
@@ -48,7 +47,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{userId:guid}")]
+        [HttpDelete("{columnId:guid}")]
         public async Task<IActionResult> DeleteUser(Guid userId, CancellationToken cancellationToken)
         {
             await _serviceManager.UserService.DeleteAsync(userId, cancellationToken);
