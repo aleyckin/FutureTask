@@ -21,7 +21,7 @@ namespace Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<Domain.Entities.Task> GetTaskById(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Domain.Entities.Task> GetTaskByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Tasks
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);

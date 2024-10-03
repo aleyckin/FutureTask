@@ -10,7 +10,7 @@ namespace Domain.RepositoryInterfaces
     public interface IUserRepository
     {
         Task<List<User>> GetAllUsersAsync(CancellationToken cancellationToken = default);
-        Task<User> GetUserById(Guid id, CancellationToken cancellationToken = default);
+        Task<User> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default);
         void Insert(User user);
         void Remove(User user);
     }

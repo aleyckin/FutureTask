@@ -10,7 +10,7 @@ namespace Domain.RepositoryInterfaces
     public interface ISpecializationRepository
     {
         Task<List<Specialization>> GetAllSpecializationsAsync(CancellationToken cancellationToken = default);
-        Task<Specialization> GetSpecializationById(Guid id, CancellationToken cancellationToken = default);
+        Task<Specialization> GetSpecializationByIdAsync(Guid id, CancellationToken cancellationToken = default);
         void Insert(Specialization specialization);
         void Remove(Specialization specialization);
     }

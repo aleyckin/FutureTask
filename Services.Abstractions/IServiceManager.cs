@@ -13,5 +13,6 @@ namespace Services.Abstractions
         ISpecializationService SpecializationService { get; }
         IUserService UserService { get; }
         IColumnService ColumnService { get; }
+        ITaskService TaskService { get; }
     }
 }

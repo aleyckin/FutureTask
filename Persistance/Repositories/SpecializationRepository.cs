@@ -25,7 +25,7 @@ namespace Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<Specialization> GetSpecializationById(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Specialization> GetSpecializationByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Specializations
                 .Include(x => x.Users)

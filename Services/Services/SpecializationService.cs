@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.SpecializationDtos;
+using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -23,27 +24,47 @@ namespace Services.Services
 
         public async Task<SpecializationDto> CreateAsync(SpecializationDtoForCreate specializationDtoForCreate, CancellationToken cancellationToken = default)
         {
-            //var specialization = await _repositoryManager.SpecializationRepository
+            var specialization = _mapper.Map<Specialization>(specializationDtoForCreate);
+            _repositoryManager.SpecializationRepository.Insert(specialization);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            return _mapper.Map<SpecializationDto>(specialization);
         }
 
-        public Task DeleteAsync(Guid specializationId, CancellationToken cancellationToken = default)
+        public async System.Threading.Tasks.Task DeleteAsync(Guid specializationId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
+            if (specialization == null)
+            {
+                throw new Exception();
+            }
+            _repositoryManager.SpecializationRepository.Remove(specialization);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        public Task<List<SpecializationDto>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<List<SpecializationDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var specializations = await _repositoryManager.SpecializationRepository.GetAllSpecializationsAsync(cancellationToken);
+            return _mapper.Map<List<SpecializationDto>>(specializations);
         }
 
-        public Task<SpecializationDto> GetSpecializationById(Guid specializationId, CancellationToken cancellationToken = default)
+        public async Task<SpecializationDto> GetSpecializationById(Guid specializationId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
+            return _mapper.Map<SpecializationDto>(specialization);
         }
 
-        public Task UpdateAsync(Guid specializationId, SpecializationDtoForUpdate specializationDtoForUpdate, CancellationToken cancellationToken = default)
+        public async System.Threading.Tasks.Task UpdateAsync(Guid specializationId, SpecializationDtoForUpdate specializationDtoForUpdate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
+            if (specialization == null)
+            {
+                throw new Exception();
+            }
+            if (specializationDtoForUpdate.Name != null)
+            {
+                specialization.Name = specializationDtoForUpdate.Name;
+            }
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }
