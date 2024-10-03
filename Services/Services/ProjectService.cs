@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.ProjectDtos;
+using Domain.Entities;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -12,38 +13,62 @@ namespace Services.Services
 {
     public class ProjectService : IProjectService
     {
-        private readonly IRepositoryManager repositoryManager;
-        private readonly IMapper mapper;
+        private readonly IRepositoryManager _repositoryManager;
+        private readonly IMapper _mapper;
 
         public ProjectService(IRepositoryManager repositoryManager, IMapper mapper)
         {
-            this.repositoryManager = repositoryManager;
-            this.mapper = mapper;
+            _repositoryManager = repositoryManager;
+            _mapper = mapper;
         }
 
-        public Task<ProjectDto> CreateAsync(ProjectDtoForCreate projectDtoForCreate, CancellationToken cancellationToken = default)
+        public async Task<ProjectDto> CreateAsync(ProjectDtoForCreate projectDtoForCreate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var project = _mapper.Map<Project>(projectDtoForCreate);
+            _repositoryManager.ProjectRepository.Insert(project);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            return _mapper.Map<ProjectDto>(project);
         }
 
-        public Task DeleteAsync(Guid projectId, CancellationToken cancellationToken = default)
+        public async System.Threading.Tasks.Task DeleteAsync(Guid projectId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
+            if (project == null)
+            {
+                throw new Exception();
+            }
+            _repositoryManager.ProjectRepository.Remove(project);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        public Task<List<ProjectDto>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<List<ProjectDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var projects = await _repositoryManager.ProjectRepository.GetAllProjectsAsync(cancellationToken);
+            return _mapper.Map<List<ProjectDto>>(projects);
         }
 
-        public Task<ProjectDto> GetProjectById(Guid projectId, CancellationToken cancellationToken = default)
+        public async Task<ProjectDto> GetProjectById(Guid projectId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
+            if (project == null) 
+            {
+                throw new Exception();
+            }
+            return _mapper.Map<ProjectDto>(project);
         }
 
-        public Task UpdateAsync(Guid projectId, ProjectDtoForUpdate projectDtoForUpdate, CancellationToken cancellationToken = default)
+        public async System.Threading.Tasks.Task UpdateAsync(Guid projectId, ProjectDtoForUpdate projectDtoForUpdate, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
+            if (project == null)
+            {
+                throw new Exception();
+            }
+            if (projectDtoForUpdate.Name != null)
+            {
+                project.Name = projectDtoForUpdate.Name;
+            }
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

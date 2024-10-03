@@ -13,7 +13,7 @@ namespace Services.Profiles
     {
         public AdministratorProfile() 
         {
-            CreateMap<Administrator, AdministratorDto>();
+            CreateMap<Administrator, AdministratorDto>().ReverseMap();
             CreateMap<Administrator, AdministratorDtoForCreate>().ReverseMap();
             CreateMap<Administrator, AdministratorDtoForUpdate>();
         }

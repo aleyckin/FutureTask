@@ -11,6 +11,6 @@ namespace Contracts.Dtos.AdministratorDtos
     public class AdministratorDto : IId
     {
         public string Email { get; set; } = string.Empty;
-        public List<ProjectDto> projects { get; set; } = new List<ProjectDto>();
+        public List<ProjectDto> Projects { get; set; } = new List<ProjectDto>();
     }
 }

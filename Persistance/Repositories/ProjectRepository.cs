@@ -17,22 +17,30 @@ namespace Persistence.Repositories
 
         public async Task<List<Project>> GetAllProjectsAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Projects
+                .Include(x => x.Columns)
+                .Include(x => x.ProjectUsers)
+                .ThenInclude(x => x.User)
+                .ToListAsync(cancellationToken);
         }
 
-        public Task<Project> GetProjectByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Project> GetProjectByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Projects
+                .Include(x => x.Columns)
+                .Include(x => x.ProjectUsers)
+                .ThenInclude(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
         public void Insert(Project project)
         {
-            throw new NotImplementedException();
+            _dbContext.Add(project);
         }
 
         public void Remove(Project project)
         {
-            throw new NotImplementedException();
+            _dbContext.Remove(project);
         }
     }
 }

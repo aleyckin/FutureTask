@@ -10,6 +10,10 @@ namespace Domain.RepositoryInterfaces
     {
         IAdministratorRepository AdministratorRepository { get; }
         IProjectRepository ProjectRepository { get; }
+        IUserRepository UserRepository { get; }
+        IColumnRepository ColumnRepository { get; }
+        ISpecializationRepository SpecializationRepository { get; }
+        ITaskRepository TaskRepository { get; }
         IUnitOfWork UnitOfWork { get; }
     }
 }

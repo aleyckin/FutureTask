@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Contracts.Dtos.ProjectDtos
+namespace Contracts.Dtos.SpecializationDtos
 {
-    public class ProjectDto : IId
+    public class SpecializationDto : IId
     {
-        public string Name { get; set; } = string.Empty; 
-        public Guid AdministratorId { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public List<User> Users { get; set; } = new List<User>();
     }

@@ -8,8 +8,11 @@ namespace Persistance
         public RepositoryDbContext(DbContextOptions options) : base(options) { }
         public DbSet<Administrator> Administrators { get; set; }
         public DbSet<Project> Projects { get; set; }
-
+        public DbSet<User> Users { get; set; }
         public DbSet<ProjectUsers> ProjectUsers { get; set; }
+        public DbSet<Specialization> Specializations { get; set; }
+        public DbSet<Domain.Entities.Task> Tasks { get; set; }
+        public DbSet<Column> Columns { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
