@@ -11,7 +11,7 @@ namespace Services.Abstractions
     public interface ITaskService
     {
         Task<List<TaskDto>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<TaskDto> GetTaskByIdAsync(Guid taskId, CancellationToken cancellationToken = default);
+        Task<TaskDto> GetTaskById(Guid taskId, CancellationToken cancellationToken = default);
         Task<TaskDto> CreateAsync(TaskDtoForCreate taskDtoForCreate, CancellationToken cancellationToken = default);
         Task UpdateAsync(Guid taskId, TaskDtoForUpdate taskDtoForUpdate, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid taskId, CancellationToken cancellationToken = default);

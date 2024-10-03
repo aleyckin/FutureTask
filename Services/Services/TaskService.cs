@@ -47,7 +47,7 @@ namespace Services.Services
             return _mapper.Map<List<TaskDto>>(tasks);
         }
 
-        public async Task<TaskDto> GetTaskByIdAsync(Guid taskId, CancellationToken cancellationToken = default)
+        public async Task<TaskDto> GetTaskById(Guid taskId, CancellationToken cancellationToken = default)
         {
             var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             return _mapper.Map<TaskDto>(task);
