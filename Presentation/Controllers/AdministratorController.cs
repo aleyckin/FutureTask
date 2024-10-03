@@ -27,10 +27,10 @@ namespace Presentation.Controllers
             return Ok(administrators);
         }
 
-        [HttpGet("{administratroId:guid}")]
-        public async Task<IActionResult> GetAdministratorById(Guid id, CancellationToken cancellationToken)
+        [HttpGet("{administratorId:guid}")]
+        public async Task<IActionResult> GetAdministratorById(Guid administratorId, CancellationToken cancellationToken)
         {
-            var administratorDto = await _serviceManager.AdministratorService.GetAdministratorById(id, cancellationToken);
+            var administratorDto = await _serviceManager.AdministratorService.GetAdministratorById(administratorId, cancellationToken);
             return Ok(administratorDto);
         }
 
@@ -42,16 +42,16 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("{administratorId:guid}")]
-        public async Task<IActionResult> UpdateAdministrator(Guid id, [FromBody] AdministratorDtoForUpdate administratorDtoForUpdate, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAdministrator(Guid administratorId, [FromBody] AdministratorDtoForUpdate administratorDtoForUpdate, CancellationToken cancellationToken)
         {
-            await _serviceManager.AdministratorService.UpdateAsync(id, administratorDtoForUpdate, cancellationToken);
+            await _serviceManager.AdministratorService.UpdateAsync(administratorId, administratorDtoForUpdate, cancellationToken);
             return NoContent();
         }
 
         [HttpDelete("{administratorId:guid}")]
-        public async Task<IActionResult> DeleteAdministrator(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteAdministrator(Guid administratorId, CancellationToken cancellationToken)
         {
-            await _serviceManager.AdministratorService.DeleteAsync(id, cancellationToken);
+            await _serviceManager.AdministratorService.DeleteAsync(administratorId, cancellationToken);
             return NoContent();
         }
 
