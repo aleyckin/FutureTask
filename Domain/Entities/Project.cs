@@ -14,7 +14,6 @@ namespace Domain.Entities
 
         public List<Column> Columns { get; set; } = new List<Column>();
 
-        public List<User> Users { get; set; } = new List<User>();
         public List<ProjectUsers> ProjectUsers { get; set; } = new List<ProjectUsers>();
     }
 }

@@ -55,5 +55,16 @@ namespace Presentation.Controllers
             await _serviceManager.UserService.DeleteAsync(userId, cancellationToken);
             return NoContent();
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto, CancellationToken cancellationToken)
+        {
+            var isValid = await _serviceManager.UserService.ValidateUserCredentials(loginDto.Email, loginDto.Password, cancellationToken);
+            if (!isValid)
+            {
+                return Unauthorized("Invalid email or password");
+            }
+            return Ok("Login successful");
+        }
     }
 }

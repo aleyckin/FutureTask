@@ -15,7 +15,7 @@ namespace Persistence.Configurations
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Email).HasMaxLength(30).IsRequired();
-            builder.Property(x => x.Password).HasMaxLength(30).IsRequired();
+            builder.Property(x => x.Password).IsRequired();
 
             builder.HasOne(x => x.Specialization)
                 .WithMany(y => y.Users)

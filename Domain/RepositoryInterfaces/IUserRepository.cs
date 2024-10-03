@@ -11,6 +11,7 @@ namespace Domain.RepositoryInterfaces
     {
         Task<List<User>> GetAllUsersAsync(CancellationToken cancellationToken = default);
         Task<User> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default);
         void Insert(User user);
         void Remove(User user);
     }

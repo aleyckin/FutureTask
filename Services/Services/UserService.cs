@@ -25,6 +25,11 @@ namespace Services.Services
         public async Task<UserDto> CreateAsync(UserDtoForCreate userDtoForCreate, CancellationToken cancellationToken = default)
         {
             var user = _mapper.Map<User>(userDtoForCreate);
+
+            byte[] salt;
+            user.Password = PasswordHasher.HashPassword(userDtoForCreate.Password, out salt);
+            user.PasswordSalt = salt;
+
             _repositoryManager.UserRepository.Insert(user);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<UserDto>(user);
@@ -47,6 +52,11 @@ namespace Services.Services
             return _mapper.Map<List<UserDto>>(users);
         }
 
+        public Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<UserDto> GetUserById(Guid userId, CancellationToken cancellationToken = default)
         {
             var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
@@ -66,13 +76,27 @@ namespace Services.Services
             }
             if (userDtoForUpdate.Password != null)
             {
-                user.Password = userDtoForUpdate.Password;
+
+                byte[] salt;
+                user.Password = PasswordHasher.HashPassword(userDtoForUpdate.Password, out salt);
+                user.PasswordSalt = salt; 
             }
             if (userDtoForUpdate.SpecializationId != Guid.Empty)
             {
                 user.SpecializationId = userDtoForUpdate.SpecializationId;
             }
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<bool> ValidateUserCredentials(string email, string password, CancellationToken cancellationToken = default)
+        {
+            var user = await _repositoryManager.UserRepository.GetUserByEmailAsync(email, cancellationToken);
+            if (user == null)
+            {
+                throw new Exception();
+            }
+            bool IsValidPassword = PasswordHasher.VerifyPassword(password, user.Password, user.PasswordSalt);
+            return IsValidPassword;
         }
     }
 }

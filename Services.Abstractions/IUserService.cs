@@ -12,6 +12,8 @@ namespace Services.Abstractions
     {
         Task<List<UserDto>> GetAllAsync(CancellationToken cancellationToken = default);
         Task<UserDto> GetUserById(Guid userId, CancellationToken cancellationToken = default);
+        Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken = default);
+        Task<bool> ValidateUserCredentials(string email, string password, CancellationToken cancellationToken = default);
         Task<UserDto> CreateAsync(UserDtoForCreate userDtoForCreate, CancellationToken cancellationToken = default);
         Task UpdateAsync(Guid userId, UserDtoForUpdate userDtoForUpdate, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid userId, CancellationToken cancellationToken = default);
