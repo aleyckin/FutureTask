@@ -17,9 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Cont
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Presentation", "Presentation\Presentation.csproj", "{140CDB07-13A6-41AA-98C1-D8B5F31C2424}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence", "Persistance\Persistence.csproj", "{2E5905A8-E4C6-47DD-8A94-88CBD8A89FD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence", "Persistence\Persistence.csproj", "{2E5905A8-E4C6-47DD-8A94-88CBD8A89FD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{886F6DB7-769A-4272-91E8-2F64D409512B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Web\Web.csproj", "{886F6DB7-769A-4272-91E8-2F64D409512B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
