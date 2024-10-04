@@ -1,4 +1,5 @@
 ﻿using Contracts.Dtos.UserDtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using System;
@@ -20,7 +21,7 @@ namespace Presentation.Controllers
             _serviceManager = serviceManager;
         }
 
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
         {
@@ -59,12 +60,15 @@ namespace Presentation.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto, CancellationToken cancellationToken)
         {
-            var isValid = await _serviceManager.UserService.ValidateUserCredentials(loginDto.Email, loginDto.Password, cancellationToken);
-            if (!isValid)
+            var userDto = await _serviceManager.UserService.ValidateUserCredentials(loginDto.Email, loginDto.Password, cancellationToken);
+            if (userDto == null)
             {
                 return Unauthorized("Invalid email or password");
             }
-            return Ok("Login successful");
+
+            var token = _serviceManager.UserService.GenerateJwtToken(userDto);
+
+            return Ok(token);
         }
     }
 }

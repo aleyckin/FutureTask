@@ -2,10 +2,14 @@
 using Contracts.Dtos.UserDtos;
 using Domain.Entities;
 using Domain.RepositoryInterfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Services.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,11 +19,13 @@ namespace Services.Services
     {
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public UserService(IRepositoryManager repositoryManager, IMapper mapper)
+        public UserService(IRepositoryManager repositoryManager, IMapper mapper, IConfiguration configuration)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         public async Task<UserDto> CreateAsync(UserDtoForCreate userDtoForCreate, CancellationToken cancellationToken = default)
@@ -88,7 +94,7 @@ namespace Services.Services
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<bool> ValidateUserCredentials(string email, string password, CancellationToken cancellationToken = default)
+        public async Task<UserDto> ValidateUserCredentials(string email, string password, CancellationToken cancellationToken = default)
         {
             var user = await _repositoryManager.UserRepository.GetUserByEmailAsync(email, cancellationToken);
             if (user == null)
@@ -96,7 +102,32 @@ namespace Services.Services
                 throw new Exception();
             }
             bool IsValidPassword = PasswordHasher.VerifyPassword(password, user.Password, user.PasswordSalt);
-            return IsValidPassword;
+            if (IsValidPassword)
+            {
+                return _mapper.Map<UserDto>(user);
+            }
+            throw new Exception();
+        }
+
+        public string GenerateJwtToken(UserDto userDto)
+        {
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userDto.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpiryInMinutes"])),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
