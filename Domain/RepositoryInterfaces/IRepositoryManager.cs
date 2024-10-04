@@ -13,6 +13,7 @@ namespace Domain.RepositoryInterfaces
         IColumnRepository ColumnRepository { get; }
         ISpecializationRepository SpecializationRepository { get; }
         ITaskRepository TaskRepository { get; }
+        IProjectUsersRepository ProjectUsersRepository { get; }
         IUnitOfWork UnitOfWork { get; }
     }
 }

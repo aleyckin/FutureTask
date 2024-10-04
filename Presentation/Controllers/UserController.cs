@@ -1,4 +1,5 @@
 ﻿using Contracts.Dtos.UserDtos;
+using Domain.Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
@@ -21,7 +22,7 @@ namespace Presentation.Controllers
             _serviceManager = serviceManager;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
         {
@@ -29,6 +30,7 @@ namespace Presentation.Controllers
             return Ok(users);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpGet("{userId:guid}")]
         public async Task<IActionResult> GetUserById(Guid userId, CancellationToken cancellationToken)
         {
@@ -36,6 +38,7 @@ namespace Presentation.Controllers
             return Ok(userDto);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserDtoForCreate userDtoForCreate)
         {
@@ -43,6 +46,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetUserById), new { userId = userDto.Id }, userDto);
         }
 
+        [Authorize]
         [HttpPut("{userId:guid}")]
         public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UserDtoForUpdate userDtoForUpdate, CancellationToken cancellationToken)
         {
@@ -50,6 +54,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{userId:guid}")]
         public async Task<IActionResult> DeleteUser(Guid userId, CancellationToken cancellationToken)
         {

@@ -44,7 +44,7 @@ builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddDbContextPool<RepositoryDbContext>(options =>
 {
-    options.UseNpgsql(connectionString); // Используем заранее полученную строку подключения
+    options.UseNpgsql(connectionString);
 });
 builder.Services.AddAutoMapper(typeof(Services.AssemblyReference));
 

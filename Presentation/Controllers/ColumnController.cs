@@ -1,4 +1,5 @@
 ﻿using Contracts.Dtos.ColumnDtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using System;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/columns")]
     public class ColumnController : ControllerBase

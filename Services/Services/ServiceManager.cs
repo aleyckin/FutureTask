@@ -17,6 +17,7 @@ namespace Services.Services
         private readonly Lazy<IUserService> _lazyUser;
         private readonly Lazy<IColumnService> _lazyColumn;
         private readonly Lazy<ITaskService> _lazyTask;
+        private readonly Lazy<IProjectUsersService> _lazyProjectUsers;
 
         public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper, IConfiguration configuration)
         { 
@@ -25,6 +26,7 @@ namespace Services.Services
             _lazyUser = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper, configuration));
             _lazyColumn = new Lazy<IColumnService>(() => new ColumnService(repositoryManager, mapper));
             _lazyTask = new Lazy<ITaskService>(() => new TaskService(repositoryManager, mapper));
+            _lazyProjectUsers = new Lazy<IProjectUsersService>(() => new ProjectUsersService(repositoryManager, mapper));
         }
 
         public IProjectService ProjectService => _lazyProjectService.Value;
@@ -32,5 +34,6 @@ namespace Services.Services
         public IUserService UserService => _lazyUser.Value;
         public IColumnService ColumnService => _lazyColumn.Value;
         public ITaskService TaskService => _lazyTask.Value;
+        public IProjectUsersService ProjectUsersService => _lazyProjectUsers.Value;
     }
 }

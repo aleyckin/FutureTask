@@ -1,4 +1,5 @@
 ﻿using Contracts.Dtos.TaskDtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using System;
@@ -19,6 +20,7 @@ namespace Presentation.Controllers
             _serviceManager = serviceManager;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetTasks(CancellationToken cancellationToken)
         {
@@ -26,6 +28,7 @@ namespace Presentation.Controllers
             return Ok(tasks);
         }
 
+        [Authorize(Roles = "TeamLead")]
         [HttpGet("{taskId:guid}")]
         public async Task<IActionResult> GetTaskById(Guid taskId, CancellationToken cancellationToken)
         {
@@ -33,6 +36,7 @@ namespace Presentation.Controllers
             return Ok(taskDto);
         }
 
+        [Authorize(Roles = "TeamLead")]
         [HttpPost]
         public async Task<IActionResult> CreateTask([FromBody] TaskDtoForCreate taskDtoForCreate)
         {
@@ -40,6 +44,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetTaskById), new { taskId = taskDto.Id }, taskDto);
         }
 
+        [Authorize(Roles = "TeamLead")]
         [HttpPut("{taskId:guid}")]
         public async Task<IActionResult> UpdateTask(Guid taskId, [FromBody] TaskDtoForUpdate taskDtoForUpdate, CancellationToken cancellationToken)
         {
@@ -47,6 +52,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "TeamLead")]
         [HttpDelete("{taskId:guid}")]
         public async Task<IActionResult> DeleteTask(Guid taskId, CancellationToken cancellationToken)
         {

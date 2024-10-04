@@ -1,0 +1,71 @@
+﻿using AutoMapper;
+using Contracts.Dtos.ProjectDtos;
+using Contracts.Dtos.ProjectUsersDtos;
+using Contracts.Dtos.UserDtos;
+using Domain.Entities;
+using Domain.RepositoryInterfaces;
+using Services.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Services.Services
+{
+    public class ProjectUsersService : IProjectUsersService
+    {
+        private readonly IRepositoryManager _repositoryManager;
+        private readonly IMapper _mapper;
+
+        public ProjectUsersService(IRepositoryManager repositoryManager, IMapper mapper)
+        {
+            _repositoryManager = repositoryManager;
+            _mapper = mapper;
+        }
+
+        public async System.Threading.Tasks.Task AddUserToProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default)
+        {
+            var projectUser = _mapper.Map<ProjectUsers>(projectUsersDto);
+            _repositoryManager.ProjectUsersRepository.Insert(projectUser);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async System.Threading.Tasks.Task DeleteUserFromProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default)
+        {
+            var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(projectUsersDto.UserId, projectUsersDto.ProjectId, cancellationToken);
+            if (projectUser == null)
+            {
+                throw new Exception();
+            }
+            _repositoryManager.ProjectUsersRepository.Remove(projectUser);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<List<ProjectDto>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default)
+        {
+            var projects = await _repositoryManager.ProjectUsersRepository.GetAllProjectsByUser(UserId, cancellationToken);
+            return _mapper.Map<List<ProjectDto>>(projects);
+        }
+
+        public async Task<List<UserDto>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default)
+        {
+            var users = await _repositoryManager.ProjectUsersRepository.GetAllUsersByProject(ProjectId, cancellationToken);
+            return _mapper.Map<List<UserDto>>(users);
+        }
+
+        public async System.Threading.Tasks.Task UpdateUserRoleInProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default)
+        {
+            var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(projectUsersDto.UserId, projectUsersDto.ProjectId, cancellationToken);
+            if (projectUser == null)
+            {
+                throw new Exception();
+            }
+            if (projectUsersDto.RoleOnProject != null)
+            {
+                projectUser.RoleOnProject = projectUsersDto.RoleOnProject.Value;
+            }
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        }
+    }
+}
