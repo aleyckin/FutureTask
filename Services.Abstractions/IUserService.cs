@@ -1,5 +1,4 @@
-﻿using Contracts.Dtos.AdministratorDtos;
-using Contracts.Dtos.UserDtos;
+﻿using Contracts.Dtos.UserDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

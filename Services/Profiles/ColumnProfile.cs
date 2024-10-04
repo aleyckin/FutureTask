@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Contracts.Dtos.AdministratorDtos;
 using Contracts.Dtos.ColumnDtos;
 using Domain.Entities;
 using System;

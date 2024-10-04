@@ -25,6 +25,7 @@ namespace Services.Services
         public async Task<TaskDto> CreateAsync(TaskDtoForCreate taskDtoForCreate, CancellationToken cancellationToken = default)
         {
             var task = _mapper.Map<Domain.Entities.Task>(taskDtoForCreate);
+            task.DateEnd = DateTime.SpecifyKind(taskDtoForCreate.DateEnd, DateTimeKind.Utc);
             _repositoryManager.TaskRepository.Insert(task);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<TaskDto>(task);

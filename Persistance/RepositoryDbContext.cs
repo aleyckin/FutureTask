@@ -6,7 +6,6 @@ namespace Persistance
     public sealed class RepositoryDbContext : DbContext
     {
         public RepositoryDbContext(DbContextOptions options) : base(options) { }
-        public DbSet<Administrator> Administrators { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<ProjectUsers> ProjectUsers { get; set; }

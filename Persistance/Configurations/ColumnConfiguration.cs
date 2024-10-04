@@ -17,7 +17,7 @@ namespace Persistence.Configurations
             builder.Property(column => column.Title);
 
             builder.HasOne(column => column.Project)
-                .WithMany(column => column.Columns)
+                .WithMany(project => project.Columns)
                 .HasForeignKey(column => column.ProjectId);
 
             builder.HasMany(column => column.Tasks)

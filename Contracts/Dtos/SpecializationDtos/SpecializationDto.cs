@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Contracts.Dtos.UserDtos;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +8,7 @@ using System.Threading.Tasks;
 
 namespace Contracts.Dtos.SpecializationDtos
 {
-    public class SpecializationDto : IId
-    {
-        public string Name { get; set; } = string.Empty;
-
-        public List<User> Users { get; set; } = new List<User>();
-    }
+    public record SpecializationDto(Guid Id, string Name, List<UserDto> Users) { }
+    public record SpecializationDtoForCreate(string Name) { }
+    public record SpecializationDtoForUpdate(string? Name) { }
 }

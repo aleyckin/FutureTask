@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Contracts.Dtos.AdministratorDtos;
 using Contracts.Dtos.TaskDtos;
 using Domain.Entities;
 using System;
@@ -15,7 +14,9 @@ namespace Services.Profiles
         public TaskProfile() 
         {
             CreateMap<Domain.Entities.Task, TaskDto>().ReverseMap();
-            CreateMap<Domain.Entities.Task, TaskDtoForCreate>().ReverseMap();
+            CreateMap<Domain.Entities.Task, TaskDtoForCreate>();
+            CreateMap<TaskDtoForCreate, Domain.Entities.Task>()
+                .ForMember(dest => dest.DateEnd, opt => opt.MapFrom(src => DateTime.SpecifyKind(src.DateEnd, DateTimeKind.Utc)));
             CreateMap<Domain.Entities.Task, TaskDtoForUpdate>();
         }
     }

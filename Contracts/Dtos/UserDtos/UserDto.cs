@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,8 @@ using System.Threading.Tasks;
 
 namespace Contracts.Dtos.UserDtos
 {
-    public class UserDto : IId
-    {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public Guid SpecializationId { get; set; }
-        public List<ProjectUsers> ProjectUsers { get; set; } = new List<ProjectUsers>();
-    }
+    public record UserDto(Guid Id, string Email, string Password, UserRole UserRole, Guid SpecializationId) { }
+    public record UserDtoForCreate(string Email, string Password, Guid SpecializationId) { }
+    public record UserDtoForUpdate(string? Email, string? Password, Guid SpecializationId) { }
+    public record LoginDto(string Email, string Password) { }
 }

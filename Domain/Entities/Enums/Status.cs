@@ -8,8 +8,8 @@ namespace Domain.Entities.Enums
 {
     public enum Status
     {
-        OnQueue = 0,
-        InProcess = 1,
-        Complete = 2
+        OnQueue,
+        InProcess,
+        Complete
     }
 }

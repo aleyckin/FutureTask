@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.Enums
 {
-    public enum RoleOnProject
+    public enum UserRole
     {
-        DefaultWorker,
-        TeamLead
+        RegularUser,
+        Administrator
     }
 }

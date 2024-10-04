@@ -13,7 +13,6 @@ namespace Persistence.Repositories
         private readonly RepositoryDbContext _dbContext;
         private readonly IUnitOfWork _unitOfWork;
 
-        private IAdministratorRepository _administratorRepository;
         private IProjectRepository _projectRepository;
         private ISpecializationRepository _specializationRepository;
         private IUserRepository _userRepository;
@@ -25,8 +24,6 @@ namespace Persistence.Repositories
             _dbContext = dbContext;
             _unitOfWork = unitOfWork;
         }
-
-        public IAdministratorRepository AdministratorRepository => _administratorRepository ??= new AdministratorRepository(_dbContext);
 
         public ISpecializationRepository SpecializationRepository => _specializationRepository ??= new SpecializationRepository(_dbContext);
 

@@ -13,8 +13,8 @@ namespace Persistence.Configurations
         public void Configure(EntityTypeBuilder<Domain.Entities.Task> builder)
         {
             builder.HasKey(task => task.Id);
-            builder.Property(task => task.Title).HasMaxLength(20).IsRequired();
-            builder.Property(task => task.Description).HasMaxLength(20).IsRequired();
+            builder.Property(task => task.Title).HasMaxLength(30).IsRequired();
+            builder.Property(task => task.Description).IsRequired();
             builder.Property(task => task.Priority).IsRequired();
             builder.Property(task => task.Status).IsRequired();
             builder.Property(task => task.DateCreated).IsRequired();

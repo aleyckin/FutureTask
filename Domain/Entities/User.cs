@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entities.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,8 @@ namespace Domain.Entities
 
         public string Password { get; set; } = string.Empty;
         public byte[] PasswordSalt { get; set; } = Array.Empty<byte>();
+
+        public UserRole UserRole { get; set; } = UserRole.RegularUser;
 
         public Guid SpecializationId { get; set; }
         public Specialization Specialization { get; set; } = null!;

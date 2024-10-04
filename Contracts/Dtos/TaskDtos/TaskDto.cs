@@ -8,15 +8,7 @@ using System.Threading.Tasks;
 
 namespace Contracts.Dtos.TaskDtos
 {
-    public class TaskDto : IId
-    {
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public Priority Priority { get; set; }
-        public Status Status { get; set; }
-        public DateTime DateCreated { get; set; }
-        public DateTime DateEnd { get; set; }
-        public Guid UserId { get; set; }
-        public Guid ColumnId { get; set; }
-    }
+    public record TaskDto(Guid Id, string Title, string Description, Priority Priority, Status Status, DateTime DateCreated, DateTime DateEnd, Guid UserId, Guid ColumnId) { }
+    public record TaskDtoForCreate(string Title, string Description, Priority Priority, Status Status, DateTime DateEnd, Guid UserId, Guid ColumnId) { }
+    public record TaskDtoForUpdate(string? Title, string? Description, Priority? Priority, Status? Status, DateTime? DateEnd, Guid? UserId, Guid? ColumnId) { }
 }
