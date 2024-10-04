@@ -28,7 +28,7 @@ namespace Presentation.Controllers
             return Ok(tasks);
         }
 
-        [Authorize(Roles = "TeamLead")]
+        [Authorize]
         [HttpGet("{taskId:guid}")]
         public async Task<IActionResult> GetTaskById(Guid taskId, CancellationToken cancellationToken)
         {
@@ -36,7 +36,7 @@ namespace Presentation.Controllers
             return Ok(taskDto);
         }
 
-        [Authorize(Roles = "TeamLead")]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateTask([FromBody] TaskDtoForCreate taskDtoForCreate)
         {
@@ -44,7 +44,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetTaskById), new { taskId = taskDto.Id }, taskDto);
         }
 
-        [Authorize(Roles = "TeamLead")]
+        [Authorize]
         [HttpPut("{taskId:guid}")]
         public async Task<IActionResult> UpdateTask(Guid taskId, [FromBody] TaskDtoForUpdate taskDtoForUpdate, CancellationToken cancellationToken)
         {
@@ -52,7 +52,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "TeamLead")]
+        [Authorize]
         [HttpDelete("{taskId:guid}")]
         public async Task<IActionResult> DeleteTask(Guid taskId, CancellationToken cancellationToken)
         {

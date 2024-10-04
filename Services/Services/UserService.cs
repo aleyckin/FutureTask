@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.UserDtos;
 using Domain.Entities;
+using Domain.Exceptions.UserExceptions;
 using Domain.RepositoryInterfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -46,7 +47,7 @@ namespace Services.Services
             var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
             if (user == null)
             {
-                throw new Exception();
+                throw new UserNotFoundException(userId);
             }
             _repositoryManager.UserRepository.Remove(user);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -58,9 +59,10 @@ namespace Services.Services
             return _mapper.Map<List<UserDto>>(users);
         }
 
-        public Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken = default)
+        public async Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var user = await _repositoryManager.UserRepository.GetUserByEmailAsync(email, cancellationToken);
+            return _mapper.Map<UserDto>(user);
         }
 
         public async Task<UserDto> GetUserById(Guid userId, CancellationToken cancellationToken = default)
@@ -74,7 +76,7 @@ namespace Services.Services
             var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
             if (user == null)
             {
-                throw new Exception();
+                throw new UserNotFoundException(userId);
             }
             if (userDtoForUpdate.Email != null)
             {
@@ -99,14 +101,14 @@ namespace Services.Services
             var user = await _repositoryManager.UserRepository.GetUserByEmailAsync(email, cancellationToken);
             if (user == null)
             {
-                throw new Exception();
+                throw new UserNotFoundEmailException(email);
             }
             bool IsValidPassword = PasswordHasher.VerifyPassword(password, user.Password, user.PasswordSalt);
             if (IsValidPassword)
             {
                 return _mapper.Map<UserDto>(user);
             }
-            throw new Exception();
+            throw new UserCredentialsException();
         }
 
         public string GenerateJwtToken(UserDto userDto)
@@ -114,7 +116,7 @@ namespace Services.Services
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userDto.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

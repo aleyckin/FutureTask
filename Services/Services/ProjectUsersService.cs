@@ -3,6 +3,7 @@ using Contracts.Dtos.ProjectDtos;
 using Contracts.Dtos.ProjectUsersDtos;
 using Contracts.Dtos.UserDtos;
 using Domain.Entities;
+using Domain.Exceptions.ProjectUsersExceptions;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -36,7 +37,7 @@ namespace Services.Services
             var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(projectUsersDto.UserId, projectUsersDto.ProjectId, cancellationToken);
             if (projectUser == null)
             {
-                throw new Exception();
+                throw new ProjectUsersNotFoundException(projectUsersDto.UserId, projectUsersDto.ProjectId);
             }
             _repositoryManager.ProjectUsersRepository.Remove(projectUser);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -59,7 +60,7 @@ namespace Services.Services
             var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(projectUsersDto.UserId, projectUsersDto.ProjectId, cancellationToken);
             if (projectUser == null)
             {
-                throw new Exception();
+                throw new ProjectUsersNotFoundException(projectUsersDto.UserId, projectUsersDto.ProjectId);
             }
             if (projectUsersDto.RoleOnProject != null)
             {

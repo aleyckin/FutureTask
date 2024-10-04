@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.ProjectDtos;
 using Domain.Entities;
+using Domain.Exceptions.ProjectExceptions;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -35,7 +36,7 @@ namespace Services.Services
             var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
             if (project == null)
             {
-                throw new Exception();
+                throw new ProjectNotFoundException(projectId);
             }
             _repositoryManager.ProjectRepository.Remove(project);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -52,7 +53,7 @@ namespace Services.Services
             var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
             if (project == null) 
             {
-                throw new Exception();
+                throw new ProjectNotFoundException(projectId);
             }
             return _mapper.Map<ProjectDto>(project);
         }
@@ -62,7 +63,7 @@ namespace Services.Services
             var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
             if (project == null)
             {
-                throw new Exception();
+                throw new ProjectNotFoundException(projectId);
             }
             if (projectDtoForUpdate.Name != null)
             {

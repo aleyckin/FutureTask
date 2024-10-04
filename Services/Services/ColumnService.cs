@@ -2,6 +2,7 @@
 using Contracts.Dtos.ColumnDtos;
 using Contracts.Dtos.ProjectDtos;
 using Domain.Entities;
+using Domain.Exceptions.ColumnException;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -36,7 +37,7 @@ namespace Services.Services
             var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(columnId, cancellationToken);
             if (column == null)
             {
-                throw new Exception();
+                throw new ColumnNotFoundException(columnId);
             }
             _repositoryManager.ColumnRepository.Remove(column);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -59,7 +60,7 @@ namespace Services.Services
             var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(columnId, cancellationToken);
             if (column == null)
             {
-                throw new Exception();
+                throw new ColumnNotFoundException(columnId);
             }
             if (columnDtoForUpdate.Title != null)
             {

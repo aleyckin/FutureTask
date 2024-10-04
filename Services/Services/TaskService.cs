@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.TaskDtos;
 using Contracts.Dtos.UserDtos;
+using Domain.Exceptions.TaskExceptions;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -36,7 +37,7 @@ namespace Services.Services
             var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
             {
-                throw new Exception();
+                throw new TaskNotFoundException(taskId);
             }
             _repositoryManager.TaskRepository.Remove(task);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -59,7 +60,7 @@ namespace Services.Services
             var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
             {
-                throw new Exception();
+                throw new TaskNotFoundException(taskId);
             }
             if (taskDtoForUpdate.Title != null)
             {

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.SpecializationDtos;
 using Domain.Entities;
+using Domain.Exceptions.SpecializationExceptions;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -35,7 +36,7 @@ namespace Services.Services
             var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
             if (specialization == null)
             {
-                throw new Exception();
+                throw new SpecializationNotFoundException(specializationId);
             }
             _repositoryManager.SpecializationRepository.Remove(specialization);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -58,7 +59,7 @@ namespace Services.Services
             var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
             if (specialization == null)
             {
-                throw new Exception();
+                throw new SpecializationNotFoundException(specializationId);
             }
             if (specializationDtoForUpdate.Name != null)
             {
