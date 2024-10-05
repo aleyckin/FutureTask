@@ -12,7 +12,7 @@ namespace Presentation.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/columns")]
+    [Route("api/{projectId:guid}/columns")]
     public class ColumnController : ControllerBase
     {
         private readonly IServiceManager _serviceManager;

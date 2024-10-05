@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Services.Services.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,8 +38,9 @@ namespace Presentation.Controllers
         }
 
         [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> CreateTask([FromBody] TaskDtoForCreate taskDtoForCreate)
+        [HttpPost("{projectId:guid}")]
+        [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
+        public async Task<IActionResult> CreateTask(Guid projectId, [FromBody] TaskDtoForCreate taskDtoForCreate)
         {
             var taskDto = await _serviceManager.TaskService.CreateAsync(taskDtoForCreate);
             return CreatedAtAction(nameof(GetTaskById), new { taskId = taskDto.Id }, taskDto);

@@ -119,6 +119,7 @@ namespace Services.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userDto.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("userId", userDto.Id.ToString()),
                 new Claim(ClaimTypes.Role, userDto.UserRole.ToString())
             };
 

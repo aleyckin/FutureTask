@@ -3,6 +3,7 @@ using Contracts.Dtos.ProjectDtos;
 using Contracts.Dtos.ProjectUsersDtos;
 using Contracts.Dtos.UserDtos;
 using Domain.Entities;
+using Domain.Entities.Enums;
 using Domain.Exceptions.ProjectUsersExceptions;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
@@ -67,6 +68,16 @@ namespace Services.Services
                 projectUser.RoleOnProject = projectUsersDto.RoleOnProject.Value;
             }
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<RoleOnProject?> GetUserRoleOnProject(Guid userId, Guid projectId, CancellationToken cancellationToken = default)
+        {
+            var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(userId, projectId, cancellationToken);
+            if (projectUser == null)
+            {
+                throw new ProjectUsersNotFoundException(userId, projectId);
+            }
+            return projectUser.RoleOnProject;
         }
     }
 }
