@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.UserDtos;
 using Domain.Entities;
+using Domain.Entities.Enums;
 using Domain.Exceptions.UserExceptions;
 using Domain.RepositoryInterfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Services.Abstractions;
@@ -117,6 +119,7 @@ namespace Services.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userDto.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, userDto.UserRole.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.SpecializationDtos;
+using Contracts.Dtos.UserDtos;
 using Domain.Entities;
+using Domain.Entities.Enums;
 using Domain.Exceptions.SpecializationExceptions;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;

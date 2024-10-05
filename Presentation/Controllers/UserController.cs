@@ -38,7 +38,7 @@ namespace Presentation.Controllers
             return Ok(userDto);
         }
 
-        [Authorize(Roles = "Administrator")]
+
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserDtoForCreate userDtoForCreate)
         {

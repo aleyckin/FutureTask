@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Contracts.Dtos.UserDtos
 {
     public record UserDto(Guid Id, string Email, string Password, UserRole UserRole, Guid SpecializationId) { }
-    public record UserDtoForCreate(string Email, string Password, Guid SpecializationId) { }
+    public record UserDtoForCreate(string Email, string Password, Guid SpecializationId, UserRole UserRole = UserRole.RegularUser) { }
     public record UserDtoForUpdate(string? Email, string? Password, Guid SpecializationId) { }
     public record LoginDto(string Email, string Password) { }
 }

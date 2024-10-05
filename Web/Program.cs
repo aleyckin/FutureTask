@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
-using Persistance;
-using Persistence.Repositories;
 using Presentation.Controllers;
 using Services.Abstractions;
 using Services.Profiles;
@@ -13,6 +11,9 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Domain.Entities.Enums;
 using Web.Middlewares;
+using Persistence.Repositories;
+using Persistance;
+using Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +69,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -75,9 +77,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.ApplyMigrations();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -86,4 +87,4 @@ app.MapControllers();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.Run();
+await app.RunAsync();

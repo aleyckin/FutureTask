@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+
     [ApiController]
     [Route("api/specializations")]
     public class SpecializationController : ControllerBase

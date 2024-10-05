@@ -1,0 +1,17 @@
+services:
+  web:
+    image: ${DOCKER_REGISTRY-}web
+    build:
+      context: .
+      dockerfile: Web/Dockerfile
+  db:
+    image: postgres:latest
+    container_name: db
+    environment: 
+        - POSTGRES_DB=FutureTask
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+    volumes:
+        - ./.containers/db-db:/var/lib/postgresql/data
+    ports:
+        - 5432:5432
