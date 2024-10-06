@@ -17,5 +17,6 @@ namespace Services.Abstractions
         Task UpdateAsync(Guid userId, UserDtoForUpdate userDtoForUpdate, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid userId, CancellationToken cancellationToken = default);
         string GenerateJwtToken(UserDto userDto);
+        Task SeedAdminUserAsync(CancellationToken cancellationToken);
     }
 }

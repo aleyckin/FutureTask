@@ -69,5 +69,16 @@ namespace Services.Services
             }
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
+
+        public async System.Threading.Tasks.Task SeedSpecializationUserAsync(CancellationToken cancellationToken = default)
+        {
+            var adminSpecialization = await _repositoryManager.SpecializationRepository.GetSpecializationByNameAsync("adminSpecialization", cancellationToken);
+
+            if (adminSpecialization == null)
+            {
+                var adminSpecializationDto = new SpecializationDtoForCreate("adminSpecialization");
+                await CreateAsync(adminSpecializationDto, cancellationToken);
+            }
+        }
     }
 }

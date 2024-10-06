@@ -72,6 +72,8 @@ builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
 var app = builder.Build();
 
+await SeedDataAsync(app.Services);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -88,3 +90,14 @@ app.MapControllers();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();
+
+
+static async Task SeedDataAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+{
+    using var scope = serviceProvider.CreateScope();
+    var serviceManager = scope.ServiceProvider.GetRequiredService<IServiceManager>();
+
+    // Инициализация специализации и администратора
+    await serviceManager.SpecializationService.SeedSpecializationUserAsync(cancellationToken);
+    await serviceManager.UserService.SeedAdminUserAsync(cancellationToken);
+}

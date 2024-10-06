@@ -4,17 +4,12 @@ using Domain.Entities;
 using Domain.Entities.Enums;
 using Domain.Exceptions.UserExceptions;
 using Domain.RepositoryInterfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Services.Abstractions;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Services
 {
@@ -134,6 +129,23 @@ namespace Services.Services
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async System.Threading.Tasks.Task SeedAdminUserAsync(CancellationToken cancellationToken = default)
+        {
+            var adminUser = await _repositoryManager.UserRepository.GetUserByEmailAsync("admin", cancellationToken);
+
+            if (adminUser == null)
+            {
+                var specializations = await _repositoryManager.SpecializationRepository.GetAllSpecializationsAsync(cancellationToken);
+                var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByNameAsync("adminSpecialization", cancellationToken);
+                if (specialization == null)
+                {
+                    throw new Exception();
+                }
+                var adminUserDto = new UserDtoForCreate("admin", "admin", specialization.Id, UserRole.Administrator);
+                await CreateAsync(adminUserDto, cancellationToken);
+            }
         }
     }
 }

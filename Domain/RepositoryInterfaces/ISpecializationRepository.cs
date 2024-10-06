@@ -11,6 +11,7 @@ namespace Domain.RepositoryInterfaces
     {
         Task<List<Specialization>> GetAllSpecializationsAsync(CancellationToken cancellationToken = default);
         Task<Specialization> GetSpecializationByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<Specialization> GetSpecializationByNameAsync(string Name, CancellationToken cancellationToken = default);
         void Insert(Specialization specialization);
         void Remove(Specialization specialization);
     }

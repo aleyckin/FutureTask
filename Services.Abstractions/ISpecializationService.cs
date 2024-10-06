@@ -14,5 +14,6 @@ namespace Services.Abstractions
         Task<SpecializationDto> CreateAsync(SpecializationDtoForCreate specializationDtoForCreate, CancellationToken cancellationToken = default);
         Task UpdateAsync(Guid specializationId, SpecializationDtoForUpdate specializationDtoForUpdate, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid specializationId, CancellationToken cancellationToken = default);
+        Task SeedSpecializationUserAsync(CancellationToken cancellationToken);
     }
 }

@@ -32,6 +32,13 @@ namespace Persistence.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
+        public async Task<Specialization> GetSpecializationByNameAsync(string Name, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Specializations
+                .Include(x => x.Users)
+                .FirstOrDefaultAsync(x => x.Name == Name, cancellationToken);
+        }
+
         public void Insert(Specialization specialization)
         {
             _dbContext.Add(specialization);
