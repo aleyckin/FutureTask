@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Enums;
+using Domain.Exceptions.UserExceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -45,7 +46,7 @@ namespace Services.Services.Attributes
 
             if (roleOnProject != _roleOnProject)
             {
-                context.Result = new ForbidResult();
+                throw new UserPermitionException();
             }
         }
     }

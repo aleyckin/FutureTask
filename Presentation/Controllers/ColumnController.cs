@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Services.Services.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Presentation.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/{projectId:guid}/columns")]
+    [Route("api/columns")]
     public class ColumnController : ControllerBase
     {
         private readonly IServiceManager _serviceManager;
@@ -21,10 +22,19 @@ namespace Presentation.Controllers
             _serviceManager = serviceManager;
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetColumns(CancellationToken cancellationToken)
         {
             var columns = await _serviceManager.ColumnService.GetAllAsync(cancellationToken);
+            return Ok(columns);
+        }
+
+        [Authorize]
+        [HttpGet("ForProject:{projectId:guid}")]
+        public async Task<IActionResult> GetColumnsForProject(Guid projectId, CancellationToken cancellationToken)
+        {
+            var columns = await _serviceManager.ColumnService.GetAllColumnsForProjectAsync(projectId, cancellationToken);
             return Ok(columns);
         }
 
@@ -35,8 +45,9 @@ namespace Presentation.Controllers
             return Ok(columnDto);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateColumn([FromBody] ColumnDtoForCreate columnDtoForCreate)
+        [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
+        [HttpPost("{projectId:guid}")]
+        public async Task<IActionResult> CreateColumn(Guid projectId, [FromBody] ColumnDtoForCreate columnDtoForCreate)
         {
             var columnDto = await _serviceManager.ColumnService.CreateAsync(columnDtoForCreate);
             return CreatedAtAction(nameof(GetColumnById), new { columnId = columnDto.Id }, columnDto);
@@ -49,10 +60,11 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{columnId:guid}")]
-        public async Task<IActionResult> DeleteUser(Guid userId, CancellationToken cancellationToken)
+        [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
+        [HttpDelete("{projectId:guid}&&{columnId:guid}")]
+        public async Task<IActionResult> DeleteColumn(Guid projectId, Guid columnId, CancellationToken cancellationToken)
         {
-            await _serviceManager.UserService.DeleteAsync(userId, cancellationToken);
+            await _serviceManager.ColumnService.DeleteAsync(columnId, cancellationToken);
             return NoContent();
         }
     }

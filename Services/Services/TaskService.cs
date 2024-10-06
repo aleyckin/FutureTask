@@ -49,6 +49,12 @@ namespace Services.Services
             return _mapper.Map<List<TaskDto>>(tasks);
         }
 
+        public async Task<List<TaskDto>> GetAllTasksForUserAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var tasks = await _repositoryManager.TaskRepository.GetAllTasksForUserAsync(userId, cancellationToken);
+            return _mapper.Map<List<TaskDto>>(tasks);
+        }
+
         public async Task<TaskDto> GetTaskById(Guid taskId, CancellationToken cancellationToken = default)
         {
             var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
@@ -80,7 +86,7 @@ namespace Services.Services
             }
             if (taskDtoForUpdate.DateEnd != null)
             {
-                task.DateEnd = (DateTime)taskDtoForUpdate.DateEnd;
+                task.DateEnd = DateTime.SpecifyKind((DateTime)taskDtoForUpdate.DateEnd, DateTimeKind.Utc);
             }
             if (taskDtoForUpdate.UserId != null)
             {

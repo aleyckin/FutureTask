@@ -3,11 +3,12 @@ using Contracts.Dtos.ProjectUsersDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Services.Services.Attributes;
 using System.Runtime.InteropServices;
 
 namespace Presentation.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrator")]
     [ApiController]
     [Route("api/projects")]
     public class ProjectController : ControllerBase
@@ -26,9 +27,9 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("{projectId:guid}")]
-        public async Task<IActionResult> GetProjectById(Guid userId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetProjectById(Guid projectId, CancellationToken cancellationToken)
         {
-            var projectDto = await _serviceManager.ProjectService.GetProjectById(userId, cancellationToken);
+            var projectDto = await _serviceManager.ProjectService.GetProjectById(projectId, cancellationToken);
             return Ok(projectDto);
         }
 
@@ -61,14 +62,7 @@ namespace Presentation.Controllers
             return Ok(users);
         }
 
-        [HttpGet("projectUsers/projects{userId:guid}")]
-        public async Task<IActionResult> GetAllProjectsForUser(Guid userId, CancellationToken cancellationToken)
-        {
-            var projects = await _serviceManager.ProjectUsersService.GetAllProjectsByUser(userId, cancellationToken);
-
-            return Ok(projects);
-        }
-
+        [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
         [HttpPost("projectUsers/addUserToProject")]
         public async Task<IActionResult> AddUserToProject([FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
         {
@@ -76,6 +70,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
         [HttpDelete("projectUsers/DeleteUserFromProject")]
         public async Task<IActionResult> DeleteUserFromProject([FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
         {

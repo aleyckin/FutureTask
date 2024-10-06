@@ -87,4 +87,4 @@ app.MapControllers();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-await app.RunAsync();
+app.Run();

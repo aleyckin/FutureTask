@@ -38,7 +38,7 @@ namespace Presentation.Controllers
             return Ok(userDto);
         }
 
-
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserDtoForCreate userDtoForCreate)
         {
@@ -60,6 +60,30 @@ namespace Presentation.Controllers
         {
             await _serviceManager.UserService.DeleteAsync(userId, cancellationToken);
             return NoContent();
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpGet("projectUsers/projectsFor:{userId:guid}")]
+        public async Task<IActionResult> GetAllProjectsForUser(Guid userId, CancellationToken cancellationToken)
+        {
+            var projects = await _serviceManager.ProjectUsersService.GetAllProjectsByUser(userId, cancellationToken);
+
+            return Ok(projects);
+        }
+
+        [Authorize]
+        [HttpGet("projectUsers/projectsForRegularUser")]
+        public async Task<IActionResult> GetAllProjectsForUser(CancellationToken cancellationToken)
+        {
+            var userIdClaim = User.FindFirst("userId")?.Value;
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+            var userId = new Guid(userIdClaim);
+            var projects = await _serviceManager.ProjectUsersService.GetAllProjectsByUser(userId, cancellationToken);
+
+            return Ok(projects);
         }
 
         [HttpPost("login")]

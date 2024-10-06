@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/tasks")]
     public class TaskController : ControllerBase
@@ -21,7 +22,7 @@ namespace Presentation.Controllers
             _serviceManager = serviceManager;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetTasks(CancellationToken cancellationToken)
         {
@@ -30,6 +31,19 @@ namespace Presentation.Controllers
         }
 
         [Authorize]
+        [HttpGet("userTasks")]
+        public async Task<IActionResult> GetUserTasks(CancellationToken cancellationToken)
+        {
+            var userIdClaim = User.FindFirst("userId")?.Value;
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+            var userId = new Guid(userIdClaim);
+            var tasks = await _serviceManager.TaskService.GetAllTasksForUserAsync(userId, cancellationToken);
+            return Ok(tasks);
+        }
+
         [HttpGet("{taskId:guid}")]
         public async Task<IActionResult> GetTaskById(Guid taskId, CancellationToken cancellationToken)
         {
@@ -37,7 +51,6 @@ namespace Presentation.Controllers
             return Ok(taskDto);
         }
 
-        [Authorize]
         [HttpPost("{projectId:guid}")]
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
         public async Task<IActionResult> CreateTask(Guid projectId, [FromBody] TaskDtoForCreate taskDtoForCreate)
@@ -46,7 +59,6 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetTaskById), new { taskId = taskDto.Id }, taskDto);
         }
 
-        [Authorize]
         [HttpPut("{taskId:guid}")]
         public async Task<IActionResult> UpdateTask(Guid taskId, [FromBody] TaskDtoForUpdate taskDtoForUpdate, CancellationToken cancellationToken)
         {
@@ -54,9 +66,9 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [Authorize]
-        [HttpDelete("{taskId:guid}")]
-        public async Task<IActionResult> DeleteTask(Guid taskId, CancellationToken cancellationToken)
+        [HttpDelete("{taskId:guid}&&{projectId:guid}")]
+        [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
+        public async Task<IActionResult> DeleteTask(Guid taskId, Guid projectId, CancellationToken cancellationToken)
         {
             await _serviceManager.TaskService.DeleteAsync(taskId, cancellationToken);
             return NoContent();

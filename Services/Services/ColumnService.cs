@@ -49,6 +49,12 @@ namespace Services.Services
             return _mapper.Map<List<ColumnDto>>(columns);
         }
 
+        public async Task<List<ColumnDto>> GetAllColumnsForProjectAsync(Guid projectId, CancellationToken cancellationToken = default)
+        {
+            var columns = await _repositoryManager.ColumnRepository.GetAllColumnsForProjectAsync(projectId, cancellationToken);
+            return _mapper.Map<List<ColumnDto>>(columns);
+        }
+
         public async Task<ColumnDto> GetColumnById(Guid columnId, CancellationToken cancellationToken = default)
         {
             var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(columnId, cancellationToken);

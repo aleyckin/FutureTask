@@ -23,6 +23,14 @@ namespace Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
+        public async Task<List<Column>> GetAllColumnsForProjectAsync(Guid ProjectId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Columns
+                .Where(x => x.ProjectId == ProjectId)
+                .Include(x => x.Tasks)
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<Column> GetColumnByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Columns

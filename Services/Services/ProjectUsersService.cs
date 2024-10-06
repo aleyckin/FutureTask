@@ -44,16 +44,16 @@ namespace Services.Services
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<List<ProjectDto>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default)
+        public async Task<List<ProjectUsersDtoForListProjects>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default)
         {
             var projects = await _repositoryManager.ProjectUsersRepository.GetAllProjectsByUser(UserId, cancellationToken);
-            return _mapper.Map<List<ProjectDto>>(projects);
+            return _mapper.Map<List<ProjectUsersDtoForListProjects>>(projects);
         }
 
-        public async Task<List<UserDto>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default)
+        public async Task<List<ProjectUsersDtoForListUsers>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default)
         {
             var users = await _repositoryManager.ProjectUsersRepository.GetAllUsersByProject(ProjectId, cancellationToken);
-            return _mapper.Map<List<UserDto>>(users);
+            return _mapper.Map<List<ProjectUsersDtoForListUsers>>(users);
         }
 
         public async System.Threading.Tasks.Task UpdateUserRoleInProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default)

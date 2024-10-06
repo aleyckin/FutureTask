@@ -21,6 +21,13 @@ namespace Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
+        public async Task<List<Domain.Entities.Task>> GetAllTasksForUserAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Tasks
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+        }
+
         public async Task<Domain.Entities.Task> GetTaskByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Tasks

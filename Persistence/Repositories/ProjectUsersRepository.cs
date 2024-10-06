@@ -16,21 +16,19 @@ namespace Persistence.Repositories
 
         public ProjectUsersRepository(RepositoryDbContext dbContext) { _dbContext = dbContext; }
 
-        public Task<List<Project>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default)
+        public Task<List<ProjectUsers>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default)
         {
             return _dbContext.ProjectUsers
                 .Where(x => x.UserId == UserId)
-                .Include(projects => projects.Project)
-                .Select(projects => projects.Project)
+                .Include(x => x.Project)
                 .ToListAsync(cancellationToken);
         }
 
-        public Task<List<User>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default)
+        public Task<List<ProjectUsers>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default)
         {
             return _dbContext.ProjectUsers
                 .Where(x => x.ProjectId == ProjectId)
-                .Include(users => users.User)
-                .Select(users => users.User)
+                .Include(x => x.User)
                 .ToListAsync(cancellationToken);
         }
 

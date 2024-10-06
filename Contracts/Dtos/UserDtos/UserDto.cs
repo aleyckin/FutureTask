@@ -12,4 +12,5 @@ namespace Contracts.Dtos.UserDtos
     public record UserDtoForCreate(string Email, string Password, Guid SpecializationId, UserRole UserRole = UserRole.RegularUser) { }
     public record UserDtoForUpdate(string? Email, string? Password, Guid SpecializationId) { }
     public record LoginDto(string Email, string Password) { }
+    public record UserWithRoleOnProjectDto(Guid UserId, string UserName, RoleOnProject RoleOnProject) { }
 }

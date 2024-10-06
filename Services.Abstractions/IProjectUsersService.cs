@@ -12,8 +12,8 @@ namespace Services.Abstractions
 {
     public interface IProjectUsersService
     {
-        Task<List<UserDto>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default);
-        Task<List<ProjectDto>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default);
+        Task<List<ProjectUsersDtoForListUsers>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default);
+        Task<List<ProjectUsersDtoForListProjects>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default);
         Task AddUserToProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default);
         Task UpdateUserRoleInProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default);
         Task DeleteUserFromProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default);

@@ -11,6 +11,7 @@ namespace Services.Abstractions
     public interface IColumnService
     {
         Task<List<ColumnDto>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<List<ColumnDto>> GetAllColumnsForProjectAsync(Guid projectId, CancellationToken cancellationToken = default);
         Task<ColumnDto> GetColumnById(Guid columnId, CancellationToken cancellationToken = default);
         Task<ColumnDto> CreateAsync(ColumnDtoForCreate columnDtoForCreate, CancellationToken cancellationToken = default);
         Task UpdateAsync(Guid columnId, ColumnDtoForUpdate columnDtoForUpdate, CancellationToken cancellationToken = default);
