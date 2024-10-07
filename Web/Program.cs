@@ -54,6 +54,7 @@ builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<IValidatorManager, ValidatorManager>();
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddDbContextPool<RepositoryDbContext>(options =>
 {
     options.UseNpgsql(connectionString);

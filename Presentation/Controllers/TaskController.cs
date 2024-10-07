@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Presentation.Controllers
@@ -53,9 +54,9 @@ namespace Presentation.Controllers
 
         [HttpPost("{projectId:guid}")]
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
-        public async Task<IActionResult> CreateTask(Guid projectId, [FromBody] TaskDtoForCreate taskDtoForCreate)
+        public async Task<IActionResult> CreateTask(Guid projectId, [FromBody] TaskDtoForCreate taskDtoForCreate, CancellationToken cancellationToken)
         {
-            var taskDto = await _serviceManager.TaskService.CreateAsync(taskDtoForCreate);
+            var taskDto = await _serviceManager.TaskService.CreateAsync(projectId, taskDtoForCreate, cancellationToken);
             return CreatedAtAction(nameof(GetTaskById), new { taskId = taskDto.Id }, taskDto);
         }
 
