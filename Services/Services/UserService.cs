@@ -29,10 +29,10 @@ namespace Services.Services
 
         public async Task<UserDto> CreateAsync(UserDtoForCreate userDtoForCreate, CancellationToken cancellationToken = default)
         {
-            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(user.SpecializationId, cancellationToken);
+            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(userDtoForCreate.SpecializationId, cancellationToken);
             if (specialization == null)
             {
-                throw new SpecializationNotFoundException(user.SpecializationId);
+                throw new SpecializationNotFoundException(userDtoForCreate.SpecializationId);
             }
 
             var user = _mapper.Map<User>(userDtoForCreate);
