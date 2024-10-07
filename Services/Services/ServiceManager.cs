@@ -19,14 +19,14 @@ namespace Services.Services
         private readonly Lazy<ITaskService> _lazyTask;
         private readonly Lazy<IProjectUsersService> _lazyProjectUsers;
 
-        public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper, IConfiguration configuration)
+        public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper, IConfiguration configuration, IValidatorManager validatorManager)
         { 
-            _lazyProjectService = new Lazy<IProjectService>(() => new ProjectService(repositoryManager, mapper));
-            _lazySpecialization = new Lazy<ISpecializationService>(() => new SpecializationService(repositoryManager, mapper));
-            _lazyUser = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper, configuration));
-            _lazyColumn = new Lazy<IColumnService>(() => new ColumnService(repositoryManager, mapper));
-            _lazyTask = new Lazy<ITaskService>(() => new TaskService(repositoryManager, mapper));
-            _lazyProjectUsers = new Lazy<IProjectUsersService>(() => new ProjectUsersService(repositoryManager, mapper));
+            _lazyProjectService = new Lazy<IProjectService>(() => new ProjectService(repositoryManager, mapper, validatorManager));
+            _lazySpecialization = new Lazy<ISpecializationService>(() => new SpecializationService(repositoryManager, mapper, validatorManager));
+            _lazyUser = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper, configuration, validatorManager));
+            _lazyColumn = new Lazy<IColumnService>(() => new ColumnService(repositoryManager, mapper, validatorManager));
+            _lazyTask = new Lazy<ITaskService>(() => new TaskService(repositoryManager, mapper, validatorManager));
+            _lazyProjectUsers = new Lazy<IProjectUsersService>(() => new ProjectUsersService(repositoryManager, mapper, validatorManager));
         }
 
         public IProjectService ProjectService => _lazyProjectService.Value;

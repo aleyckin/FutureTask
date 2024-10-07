@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.SpecializationDtos;
+using Contracts.Dtos.UserDtos;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace Services.Profiles
             CreateMap<Specialization, SpecializationDto>().ReverseMap();
             CreateMap<Specialization, SpecializationDtoForCreate>().ReverseMap();
             CreateMap<Specialization, SpecializationDtoForUpdate>();
+            CreateMap<SpecializationDtoForUpdate, Specialization>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

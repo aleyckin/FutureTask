@@ -18,6 +18,8 @@ namespace Services.Profiles
             CreateMap<TaskDtoForCreate, Domain.Entities.Task>()
                 .ForMember(dest => dest.DateEnd, opt => opt.MapFrom(src => DateTime.SpecifyKind(src.DateEnd, DateTimeKind.Utc)));
             CreateMap<Domain.Entities.Task, TaskDtoForUpdate>();
+            CreateMap<TaskDtoForUpdate, Domain.Entities.Task>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

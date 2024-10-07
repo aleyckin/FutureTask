@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.ProjectDtos;
+using Contracts.Dtos.UserDtos;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace Services.Profiles
             CreateMap<Project, ProjectDto>().ReverseMap();
             CreateMap<Project, ProjectDtoForCreate>().ReverseMap();
             CreateMap<Project, ProjectDtoForUpdate>();
+            CreateMap<ProjectDtoForUpdate, Project>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

@@ -18,15 +18,19 @@ namespace Services.Services
     {
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
+        private readonly IValidatorManager _validatorManager;
 
-        public SpecializationService(IRepositoryManager repositoryManager, IMapper mapper)
+        public SpecializationService(IRepositoryManager repositoryManager, IMapper mapper, IValidatorManager validatorManager)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
+            _validatorManager = validatorManager;
         }
 
         public async Task<SpecializationDto> CreateAsync(SpecializationDtoForCreate specializationDtoForCreate, CancellationToken cancellationToken = default)
         {
+            await _validatorManager.ValidateAsync(specializationDtoForCreate, cancellationToken);
+
             var specialization = _mapper.Map<Specialization>(specializationDtoForCreate);
             _repositoryManager.SpecializationRepository.Insert(specialization);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -62,15 +66,15 @@ namespace Services.Services
 
         public async System.Threading.Tasks.Task UpdateAsync(Guid specializationId, SpecializationDtoForUpdate specializationDtoForUpdate, CancellationToken cancellationToken = default)
         {
+            await _validatorManager.ValidateAsync(specializationId, cancellationToken);
+
             var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
             if (specialization == null)
             {
                 throw new SpecializationNotFoundException(specializationId);
             }
-            if (specializationDtoForUpdate.Name != null)
-            {
-                specialization.Name = specializationDtoForUpdate.Name;
-            }
+
+            _mapper.Map(specializationDtoForUpdate, specialization);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
 

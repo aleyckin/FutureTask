@@ -21,15 +21,19 @@ namespace Services.Services
     {
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
+        private readonly IValidatorManager _validatorManager;
 
-        public ProjectUsersService(IRepositoryManager repositoryManager, IMapper mapper)
+        public ProjectUsersService(IRepositoryManager repositoryManager, IMapper mapper, IValidatorManager validatorManager)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
+            _validatorManager = validatorManager;
         }
 
         public async System.Threading.Tasks.Task AddUserToProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default)
         {
+            await _validatorManager.ValidateAsync(projectUsersDto, cancellationToken);
+
             var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectUsersDto.ProjectId, cancellationToken);
             if (project == null)
             {
@@ -83,6 +87,8 @@ namespace Services.Services
 
         public async System.Threading.Tasks.Task UpdateUserRoleInProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default)
         {
+            await _validatorManager.ValidateAsync(projectUsersDto, cancellationToken);
+
             var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(projectUsersDto.UserId, projectUsersDto.ProjectId, cancellationToken);
             if (projectUser == null)
             {

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.ColumnDtos;
 using Contracts.Dtos.ProjectDtos;
+using Contracts.Dtos.UserDtos;
 using Domain.Entities;
 using Domain.Exceptions.ColumnException;
 using Domain.Exceptions.ProjectExceptions;
@@ -18,15 +19,19 @@ namespace Services.Services
     {
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
+        private readonly IValidatorManager _validatorManager;
 
-        public ColumnService(IRepositoryManager repositoryManager, IMapper mapper)
+        public ColumnService(IRepositoryManager repositoryManager, IMapper mapper, IValidatorManager validatorManager)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
+            _validatorManager = validatorManager;
         }
 
         public async Task<ColumnDto> CreateAsync(ColumnDtoForCreate columnDtoForCreate, CancellationToken cancellationToken = default)
         {
+            await _validatorManager.ValidateAsync(columnDtoForCreate, cancellationToken);
+
             var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(columnDtoForCreate.ProjectId, cancellationToken);
             if (project == null)
             {
@@ -75,15 +80,15 @@ namespace Services.Services
 
         public async System.Threading.Tasks.Task UpdateAsync(Guid columnId, ColumnDtoForUpdate columnDtoForUpdate, CancellationToken cancellationToken = default)
         {
+            await _validatorManager.ValidateAsync(columnDtoForUpdate, cancellationToken);
+
             var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(columnId, cancellationToken);
             if (column == null)
             {
                 throw new ColumnNotFoundException(columnId);
             }
-            if (columnDtoForUpdate.Title != null)
-            {
-                column.Title = columnDtoForUpdate.Title;
-            }
+
+            _mapper.Map(columnDtoForUpdate, column);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
     }

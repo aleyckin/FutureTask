@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Contracts.Dtos.TaskDtos;
 using Contracts.Dtos.UserDtos;
 using Domain.Entities;
 using Domain.Entities.Enums;
@@ -11,6 +12,7 @@ using Services.Abstractions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Services.Services
 {
@@ -19,16 +21,20 @@ namespace Services.Services
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly IValidatorManager _validatorManager;
 
-        public UserService(IRepositoryManager repositoryManager, IMapper mapper, IConfiguration configuration)
+        public UserService(IRepositoryManager repositoryManager, IMapper mapper, IConfiguration configuration, IValidatorManager validatorManager)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
             _configuration = configuration;
+            _validatorManager = validatorManager;
         }
 
         public async Task<UserDto> CreateAsync(UserDtoForCreate userDtoForCreate, CancellationToken cancellationToken = default)
         {
+            await _validatorManager.ValidateAsync(userDtoForCreate, cancellationToken);
+
             var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(userDtoForCreate.SpecializationId, cancellationToken);
             if (specialization == null)
             {
@@ -85,15 +91,22 @@ namespace Services.Services
 
         public async System.Threading.Tasks.Task UpdateAsync(Guid userId, UserDtoForUpdate userDtoForUpdate, CancellationToken cancellationToken = default)
         {
+            await _validatorManager.ValidateAsync(userDtoForUpdate, cancellationToken);
+
             var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
             if (user == null)
             {
                 throw new UserNotFoundException(userId);
             }
-            if (userDtoForUpdate.Email != null)
+
+            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync((Guid)userDtoForUpdate.SpecializationId, cancellationToken);
+            if (specialization == null)
             {
-                user.Email = userDtoForUpdate.Email;
+                throw new SpecializationNotFoundException((Guid)userDtoForUpdate.SpecializationId);
             }
+
+            _mapper.Map(userDtoForUpdate, user);
+
             if (userDtoForUpdate.Password != null)
             {
 
@@ -101,15 +114,7 @@ namespace Services.Services
                 user.Password = PasswordHasher.HashPassword(userDtoForUpdate.Password, out salt);
                 user.PasswordSalt = salt; 
             }
-            if (userDtoForUpdate.SpecializationId != Guid.Empty)
-            {
-                var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(userDtoForUpdate.SpecializationId);
-                if (specialization == null)
-                {
-                    throw new SpecializationNotFoundException(userDtoForUpdate.SpecializationId);
-                }
-                user.SpecializationId = userDtoForUpdate.SpecializationId;
-            }
+
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
 
@@ -153,17 +158,16 @@ namespace Services.Services
 
         public async System.Threading.Tasks.Task SeedAdminUserAsync(CancellationToken cancellationToken = default)
         {
-            var adminUser = await _repositoryManager.UserRepository.GetUserByEmailAsync("admin", cancellationToken);
+            var adminUser = await _repositoryManager.UserRepository.GetUserByEmailAsync("admin@admin", cancellationToken);
 
             if (adminUser == null)
             {
-                var specializations = await _repositoryManager.SpecializationRepository.GetAllSpecializationsAsync(cancellationToken);
                 var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByNameAsync("adminSpecialization", cancellationToken);
                 if (specialization == null)
                 {
                     throw new Exception();
                 }
-                var adminUserDto = new UserDtoForCreate("admin", "admin", specialization.Id, UserRole.Administrator);
+                var adminUserDto = new UserDtoForCreate("admin@admin", "password", specialization.Id, UserRole.Administrator);
                 await CreateAsync(adminUserDto, cancellationToken);
             }
         }

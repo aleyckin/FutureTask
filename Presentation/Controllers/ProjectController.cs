@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace Presentation.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize]
     [ApiController]
     [Route("api/projects")]
     public class ProjectController : ControllerBase
@@ -19,6 +19,7 @@ namespace Presentation.Controllers
             _serviceManager = serviceManager;
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetProjects(CancellationToken cancellationToken)
         {
@@ -26,6 +27,7 @@ namespace Presentation.Controllers
             return Ok(projects);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpGet("{projectId:guid}")]
         public async Task<IActionResult> GetProjectById(Guid projectId, CancellationToken cancellationToken)
         {
@@ -33,6 +35,7 @@ namespace Presentation.Controllers
             return Ok(projectDto);
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<IActionResult> CreateProject([FromBody] ProjectDtoForCreate projectDtoForCreate)
         {
@@ -40,6 +43,7 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetProjectById), new { projectId = projectDto.Id }, projectDto);
         }
 
+        [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
         [HttpPut("{projectId:guid}")]
         public async Task<IActionResult> UpdateProject(Guid projectId, [FromBody] ProjectDtoForUpdate projectDtoForUpdate, CancellationToken cancellationToken)
         {
@@ -47,6 +51,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("{projectId:guid}")]
         public async Task<IActionResult> DeleteProject(Guid projectId, CancellationToken cancellationToken)
         {
@@ -54,6 +59,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
         [HttpGet("projectUsers/users{projectId:guid}")]
         public async Task<IActionResult> GetAllUsersForProject(Guid projectId, CancellationToken cancellationToken)
         {
@@ -70,9 +76,24 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [HttpPost("projectUsers/addUserToProjectAsAdmin")]
+        public async Task<IActionResult> AddUserToProjectAsAdmin([FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
+        {
+            await _serviceManager.ProjectUsersService.AddUserToProjectAsync(projectUsersDto, cancellationToken);
+            return NoContent();
+        }
+
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
         [HttpDelete("projectUsers/DeleteUserFromProject")]
         public async Task<IActionResult> DeleteUserFromProject([FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
+        {
+            await _serviceManager.ProjectUsersService.DeleteUserFromProjectAsync(projectUsersDto, cancellationToken);
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpDelete("projectUsers/DeleteUserFromProjectAsAdmin")]
+        public async Task<IActionResult> DeleteUserFromProjectAsAdmin([FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
         {
             await _serviceManager.ProjectUsersService.DeleteUserFromProjectAsync(projectUsersDto, cancellationToken);
             return NoContent();

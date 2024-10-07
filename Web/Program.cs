@@ -14,6 +14,9 @@ using Web.Middlewares;
 using Persistence.Repositories;
 using Persistance;
 using Web;
+using Services.Validators;
+using FluentValidation.AspNetCore;
+using Services.Validators.TaskValidators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +26,12 @@ var configuration = builder.Configuration;
 // Add services to the container.
 
 builder.Services.AddControllers()
-    .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
+    .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly)
+    .AddFluentValidation(fv =>
+    {
+        fv.RegisterValidatorsFromAssemblyContaining<TaskValidatorForCreate>();
+    }); ;
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -43,6 +51,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
+builder.Services.AddScoped<IValidatorManager, ValidatorManager>();
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddDbContextPool<RepositoryDbContext>(options =>

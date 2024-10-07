@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.ProjectDtos;
+using Contracts.Dtos.TaskDtos;
 using Contracts.Dtos.UserDtos;
 using Domain.Entities;
 using System;
@@ -18,6 +19,8 @@ namespace Services.Profiles
             CreateMap<User, UserDtoForCreate>().ReverseMap();
             CreateMap<User, UserDtoForUpdate>();
             CreateMap<User, LoginDto>().ReverseMap();
+            CreateMap<UserDtoForUpdate, User>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }
