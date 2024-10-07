@@ -53,6 +53,10 @@ namespace Services.Services
         public async Task<SpecializationDto> GetSpecializationById(Guid specializationId, CancellationToken cancellationToken = default)
         {
             var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
+            if (specialization == null)
+            {
+                throw new SpecializationNotFoundException(specializationId);
+            }
             return _mapper.Map<SpecializationDto>(specialization);
         }
 

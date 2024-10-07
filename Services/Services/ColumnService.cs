@@ -3,6 +3,7 @@ using Contracts.Dtos.ColumnDtos;
 using Contracts.Dtos.ProjectDtos;
 using Domain.Entities;
 using Domain.Exceptions.ColumnException;
+using Domain.Exceptions.ProjectExceptions;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -26,7 +27,14 @@ namespace Services.Services
 
         public async Task<ColumnDto> CreateAsync(ColumnDtoForCreate columnDtoForCreate, CancellationToken cancellationToken = default)
         {
+            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(columnDtoForCreate.ProjectId, cancellationToken);
+            if (project == null)
+            {
+                throw new ProjectNotFoundException(columnDtoForCreate.ProjectId);
+            }
+
             var column = _mapper.Map<Column>(columnDtoForCreate);
+
             _repositoryManager.ColumnRepository.Insert(column);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<ColumnDto>(column);
@@ -58,6 +66,10 @@ namespace Services.Services
         public async Task<ColumnDto> GetColumnById(Guid columnId, CancellationToken cancellationToken = default)
         {
             var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(columnId, cancellationToken);
+            if (column == null)
+            {
+                throw new ColumnNotFoundException(columnId);
+            }
             return _mapper.Map<ColumnDto>(column);
         }
 

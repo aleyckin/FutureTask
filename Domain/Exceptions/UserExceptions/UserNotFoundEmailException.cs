@@ -9,6 +9,6 @@ namespace Domain.Exceptions.UserExceptions
 {
     public sealed class UserNotFoundEmailException : NotFoundException
     {
-        public UserNotFoundEmailException(string email) : base($"The User with the Email {email} not found.") { }
+        public UserNotFoundEmailException(string email) : base($"The User with the email {email} not found.") { }
     }
 }

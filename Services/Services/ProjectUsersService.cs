@@ -4,7 +4,9 @@ using Contracts.Dtos.ProjectUsersDtos;
 using Contracts.Dtos.UserDtos;
 using Domain.Entities;
 using Domain.Entities.Enums;
+using Domain.Exceptions.ProjectExceptions;
 using Domain.Exceptions.ProjectUsersExceptions;
+using Domain.Exceptions.UserExceptions;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -28,7 +30,20 @@ namespace Services.Services
 
         public async System.Threading.Tasks.Task AddUserToProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default)
         {
+            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectUsersDto.ProjectId, cancellationToken);
+            if (project == null)
+            {
+                throw new ProjectNotFoundException(projectUsersDto.ProjectId);
+            }
+
+            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(projectUsersDto.UserId, cancellationToken);
+            if (user == null)
+            {
+                throw new UserNotFoundException(projectUsersDto.UserId);
+            }
+
             var projectUser = _mapper.Map<ProjectUsers>(projectUsersDto);
+
             _repositoryManager.ProjectUsersRepository.Insert(projectUser);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
@@ -46,12 +61,22 @@ namespace Services.Services
 
         public async Task<List<ProjectUsersDtoForListProjects>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default)
         {
+            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(UserId, cancellationToken);
+            if (user == null) 
+            { 
+                throw new UserNotFoundException(UserId);
+            }
             var projects = await _repositoryManager.ProjectUsersRepository.GetAllProjectsByUser(UserId, cancellationToken);
             return _mapper.Map<List<ProjectUsersDtoForListProjects>>(projects);
         }
 
         public async Task<List<ProjectUsersDtoForListUsers>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default)
         {
+            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(ProjectId, cancellationToken);
+            if (project == null)
+            {
+                throw new ProjectNotFoundException(ProjectId);
+            }
             var users = await _repositoryManager.ProjectUsersRepository.GetAllUsersByProject(ProjectId, cancellationToken);
             return _mapper.Map<List<ProjectUsersDtoForListUsers>>(users);
         }

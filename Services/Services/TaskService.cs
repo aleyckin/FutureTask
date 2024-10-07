@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.TaskDtos;
 using Contracts.Dtos.UserDtos;
+using Domain.Exceptions.ColumnException;
 using Domain.Exceptions.TaskExceptions;
+using Domain.Exceptions.UserExceptions;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
 using System;
@@ -25,6 +27,18 @@ namespace Services.Services
 
         public async Task<TaskDto> CreateAsync(TaskDtoForCreate taskDtoForCreate, CancellationToken cancellationToken = default)
         {
+            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(taskDtoForCreate.UserId, cancellationToken);
+            if (user == null) 
+            {
+                throw new UserNotFoundException(taskDtoForCreate.UserId);
+            }
+
+            var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(taskDtoForCreate.ColumnId, cancellationToken);
+            if (column == null)
+            {
+                throw new ColumnNotFoundException(taskDtoForCreate.ColumnId);
+            }
+
             var task = _mapper.Map<Domain.Entities.Task>(taskDtoForCreate);
             task.DateEnd = DateTime.SpecifyKind(taskDtoForCreate.DateEnd, DateTimeKind.Utc);
             _repositoryManager.TaskRepository.Insert(task);
@@ -58,6 +72,10 @@ namespace Services.Services
         public async Task<TaskDto> GetTaskById(Guid taskId, CancellationToken cancellationToken = default)
         {
             var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
+            if (task == null)
+            {
+                throw new TaskNotFoundException(taskId);
+            }
             return _mapper.Map<TaskDto>(task);
         }
 

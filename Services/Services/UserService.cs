@@ -2,6 +2,7 @@
 using Contracts.Dtos.UserDtos;
 using Domain.Entities;
 using Domain.Entities.Enums;
+using Domain.Exceptions.SpecializationExceptions;
 using Domain.Exceptions.UserExceptions;
 using Domain.RepositoryInterfaces;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,12 @@ namespace Services.Services
 
         public async Task<UserDto> CreateAsync(UserDtoForCreate userDtoForCreate, CancellationToken cancellationToken = default)
         {
+            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(user.SpecializationId, cancellationToken);
+            if (specialization == null)
+            {
+                throw new SpecializationNotFoundException(user.SpecializationId);
+            }
+
             var user = _mapper.Map<User>(userDtoForCreate);
 
             byte[] salt;
@@ -59,12 +66,20 @@ namespace Services.Services
         public async Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken = default)
         {
             var user = await _repositoryManager.UserRepository.GetUserByEmailAsync(email, cancellationToken);
+            if (user == null)
+            {
+                throw new UserNotFoundEmailException(email);
+            }
             return _mapper.Map<UserDto>(user);
         }
 
         public async Task<UserDto> GetUserById(Guid userId, CancellationToken cancellationToken = default)
         {
             var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            if (user == null)
+            {
+                throw new UserNotFoundException(userId);
+            }
             return _mapper.Map<UserDto>(user);
         }
 
@@ -88,6 +103,11 @@ namespace Services.Services
             }
             if (userDtoForUpdate.SpecializationId != Guid.Empty)
             {
+                var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(userDtoForUpdate.SpecializationId);
+                if (specialization == null)
+                {
+                    throw new SpecializationNotFoundException(userDtoForUpdate.SpecializationId);
+                }
                 user.SpecializationId = userDtoForUpdate.SpecializationId;
             }
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
