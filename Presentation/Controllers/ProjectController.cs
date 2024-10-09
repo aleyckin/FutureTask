@@ -69,13 +69,14 @@ namespace Presentation.Controllers
         }
 
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
-        [HttpPost("projectUsers/addUserToProject")]
-        public async Task<IActionResult> AddUserToProject([FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
+        [HttpPost("projectUsers/addUserToProject:{projectId:guid}")]
+        public async Task<IActionResult> AddUserToProject(Guid projectId,[FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
         {
             await _serviceManager.ProjectUsersService.AddUserToProjectAsync(projectUsersDto, cancellationToken);
             return NoContent();
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost("projectUsers/addUserToProjectAsAdmin")]
         public async Task<IActionResult> AddUserToProjectAsAdmin([FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
         {
@@ -84,8 +85,8 @@ namespace Presentation.Controllers
         }
 
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
-        [HttpDelete("projectUsers/DeleteUserFromProject")]
-        public async Task<IActionResult> DeleteUserFromProject([FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
+        [HttpDelete("projectUsers/DeleteUserFromProject:{projectId:guid}")]
+        public async Task<IActionResult> DeleteUserFromProject(Guid projectId, [FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
         {
             await _serviceManager.ProjectUsersService.DeleteUserFromProjectAsync(projectUsersDto, cancellationToken);
             return NoContent();

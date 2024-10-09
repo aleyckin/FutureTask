@@ -82,8 +82,6 @@ builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
 var app = builder.Build();
 
-await SeedDataAsync(app.Services);
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -98,6 +96,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+await SeedDataAsync(app.Services);
 
 app.Run();
 

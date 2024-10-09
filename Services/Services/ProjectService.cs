@@ -65,7 +65,7 @@ namespace Services.Services
 
         public async System.Threading.Tasks.Task UpdateAsync(Guid projectId, ProjectDtoForUpdate projectDtoForUpdate, CancellationToken cancellationToken = default)
         {
-            await _validatorManager.ValidateAsync(projectId, cancellationToken);
+            await _validatorManager.ValidateAsync(projectDtoForUpdate, cancellationToken);
 
             var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
             if (project == null)

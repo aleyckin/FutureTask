@@ -66,7 +66,7 @@ namespace Services.Services
 
         public async System.Threading.Tasks.Task UpdateAsync(Guid specializationId, SpecializationDtoForUpdate specializationDtoForUpdate, CancellationToken cancellationToken = default)
         {
-            await _validatorManager.ValidateAsync(specializationId, cancellationToken);
+            await _validatorManager.ValidateAsync(specializationDtoForUpdate, cancellationToken);
 
             var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
             if (specialization == null)

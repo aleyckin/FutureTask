@@ -76,13 +76,25 @@ namespace Services.Services
             return _mapper.Map<TaskDto>(task);
         }
 
-        public async System.Threading.Tasks.Task DeleteAsync(Guid taskId, CancellationToken cancellationToken = default)
+        public async System.Threading.Tasks.Task DeleteAsync(Guid projectId, Guid taskId, CancellationToken cancellationToken = default)
         {
             var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
             {
                 throw new TaskNotFoundException(taskId);
             }
+
+            var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(task.ColumnId, cancellationToken);
+            if (column == null)
+            {
+                throw new ColumnNotFoundException(task.ColumnId);
+            }
+
+            if (projectId != column.ProjectId)
+            {
+                throw new TaskCreatingErrorWithColumnDependency(task.ColumnId, projectId);
+            }
+
             _repositoryManager.TaskRepository.Remove(task);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }

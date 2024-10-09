@@ -71,7 +71,7 @@ namespace Presentation.Controllers
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
         public async Task<IActionResult> DeleteTask(Guid taskId, Guid projectId, CancellationToken cancellationToken)
         {
-            await _serviceManager.TaskService.DeleteAsync(taskId, cancellationToken);
+            await _serviceManager.TaskService.DeleteAsync(projectId, taskId, cancellationToken);
             return NoContent();
         }
     }

@@ -13,6 +13,7 @@ namespace Services.Validators.ColumnValidator
         public ColumnValidatorForUpdate() 
         {
             RuleFor(column => column.Title)
+                .MinimumLength(1).WithMessage("The title must consists more or equal 1 characters.")
                 .MaximumLength(200).WithMessage("The title must consists less or equal 200 characters.")
                 .When(task => task.Title != null);
         }

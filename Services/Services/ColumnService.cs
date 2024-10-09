@@ -3,7 +3,9 @@ using Contracts.Dtos.ColumnDtos;
 using Contracts.Dtos.ProjectDtos;
 using Contracts.Dtos.UserDtos;
 using Domain.Entities;
+using Domain.Exceptions.AbstractExceptions;
 using Domain.Exceptions.ColumnException;
+using Domain.Exceptions.ColumnExceptions;
 using Domain.Exceptions.ProjectExceptions;
 using Domain.RepositoryInterfaces;
 using Services.Abstractions;
@@ -28,7 +30,7 @@ namespace Services.Services
             _validatorManager = validatorManager;
         }
 
-        public async Task<ColumnDto> CreateAsync(ColumnDtoForCreate columnDtoForCreate, CancellationToken cancellationToken = default)
+        public async Task<ColumnDto> CreateAsync(Guid projectId, ColumnDtoForCreate columnDtoForCreate, CancellationToken cancellationToken = default)
         {
             await _validatorManager.ValidateAsync(columnDtoForCreate, cancellationToken);
 
@@ -36,6 +38,10 @@ namespace Services.Services
             if (project == null)
             {
                 throw new ProjectNotFoundException(columnDtoForCreate.ProjectId);
+            }
+            if (projectId != columnDtoForCreate.ProjectId)
+            {
+                throw new ColumnCreatingErrorWithProjectDependency(projectId, columnDtoForCreate.ProjectId);
             }
 
             var column = _mapper.Map<Column>(columnDtoForCreate);
@@ -45,12 +51,16 @@ namespace Services.Services
             return _mapper.Map<ColumnDto>(column);
         }
 
-        public async System.Threading.Tasks.Task DeleteAsync(Guid columnId, CancellationToken cancellationToken = default)
+        public async System.Threading.Tasks.Task DeleteAsync(Guid projectId, Guid columnId, CancellationToken cancellationToken = default)
         {
             var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(columnId, cancellationToken);
             if (column == null)
             {
                 throw new ColumnNotFoundException(columnId);
+            }
+            if (projectId != column.ProjectId)
+            {
+                throw new ColumnCreatingErrorWithProjectDependency(projectId, column.ProjectId);
             }
             _repositoryManager.ColumnRepository.Remove(column);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);

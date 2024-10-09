@@ -32,6 +32,7 @@ namespace Web.Middlewares
                 NotFoundException => StatusCodes.Status404NotFound,
                 BadCredentialsException => StatusCodes.Status400BadRequest,
                 PermitionException => StatusCodes.Status403Forbidden,
+                DestroyingLogicalDependencyException => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError
             };
             var response = new
