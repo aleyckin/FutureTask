@@ -16,5 +16,9 @@ namespace Services.Abstractions
         Task<TaskDto> CreateAsync(Guid projectId, TaskDtoForCreate taskDtoForCreate, CancellationToken cancellationToken = default);
         Task UpdateAsync(Guid taskId, TaskDtoForUpdate taskDtoForUpdate, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid projectId, Guid taskId, CancellationToken cancellationToken = default);
+        Task<string> GetResponseByChatBot(Guid taskId, string userMessage, CancellationToken cancellationToken = default);
+        Task<List<string>> GetTaskChatBotContext(Guid taskId, CancellationToken cancellationToken = default);
+        Task DeleteTaskChatBotContext(Guid taskId, CancellationToken cancellationToken = default);
+        Task<List<string>> GetConversation(Guid taskId, CancellationToken cancellationToken = default);
     }
 }

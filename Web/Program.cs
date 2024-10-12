@@ -17,6 +17,7 @@ using Web;
 using Services.Validators;
 using FluentValidation.AspNetCore;
 using Services.Validators.TaskValidators;
+using LikhodedDynamics.Sber.GigaChatSDK;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +79,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+builder.Services.AddSingleton<GigaChat>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    return new GigaChat(
+        configuration["ChatBotSettings:ApiKey"],
+        isCommercial: false,
+        ignoreTLS: true,
+        saveImage: false
+    );
+});
+
 
 
 var app = builder.Build();

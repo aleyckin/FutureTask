@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.RepositoryInterfaces;
+using LikhodedDynamics.Sber.GigaChatSDK;
 using Microsoft.Extensions.Configuration;
 using Services.Abstractions;
 using System;
@@ -19,13 +20,13 @@ namespace Services.Services
         private readonly Lazy<ITaskService> _lazyTask;
         private readonly Lazy<IProjectUsersService> _lazyProjectUsers;
 
-        public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper, IConfiguration configuration, IValidatorManager validatorManager, INotificationService notificationService)
+        public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper, IConfiguration configuration, IValidatorManager validatorManager, INotificationService notificationService, GigaChat gigaChat)
         { 
             _lazyProjectService = new Lazy<IProjectService>(() => new ProjectService(repositoryManager, mapper, validatorManager));
             _lazySpecialization = new Lazy<ISpecializationService>(() => new SpecializationService(repositoryManager, mapper, validatorManager));
             _lazyUser = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper, configuration, validatorManager));
             _lazyColumn = new Lazy<IColumnService>(() => new ColumnService(repositoryManager, mapper, validatorManager));
-            _lazyTask = new Lazy<ITaskService>(() => new TaskService(repositoryManager, mapper, validatorManager, notificationService));
+            _lazyTask = new Lazy<ITaskService>(() => new TaskService(repositoryManager, mapper, validatorManager, notificationService, configuration, gigaChat));
             _lazyProjectUsers = new Lazy<IProjectUsersService>(() => new ProjectUsersService(repositoryManager, mapper, validatorManager));
         }
 

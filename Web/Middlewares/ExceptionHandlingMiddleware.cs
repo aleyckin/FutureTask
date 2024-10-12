@@ -33,6 +33,7 @@ namespace Web.Middlewares
                 BadCredentialsException => StatusCodes.Status400BadRequest,
                 PermitionException => StatusCodes.Status403Forbidden,
                 DestroyingLogicalDependencyException => StatusCodes.Status400BadRequest,
+                ChatBotException => StatusCodes.Status404NotFound,
                 _ => StatusCodes.Status500InternalServerError
             };
             var response = new

@@ -19,5 +19,7 @@ namespace Domain.Entities
         public User? User { get; set; }
         public Guid ColumnId { get; set; }
         public Column? Column { get; set; }
+        public List<string>? ContextMessages { get; set; }
+        public List<string>? Conversation { get; set; }
     }
 }

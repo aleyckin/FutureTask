@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions.TaskExceptions
 {
-    public class TaskCreatingErrorWithColumnDependency : DestroyingLogicalDependencyException
+    public sealed class TaskCreatingErrorWithColumnDependency : DestroyingLogicalDependencyException
     {
         public TaskCreatingErrorWithColumnDependency(Guid columnId, Guid projectId) : base($"The column with identifier {columnId} not belongs to project with identifier {projectId}.") { }
     }

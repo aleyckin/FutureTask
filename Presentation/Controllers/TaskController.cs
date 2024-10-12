@@ -74,5 +74,33 @@ namespace Presentation.Controllers
             await _serviceManager.TaskService.DeleteAsync(projectId, taskId, cancellationToken);
             return NoContent();
         }
+
+        [HttpPost("{taskId:guid}/chatBot")]
+        public async Task<IActionResult> GetChatBotResponse(Guid taskId, string userMessage, CancellationToken cancellationToken)
+        {
+            string response = await _serviceManager.TaskService.GetResponseByChatBot(taskId, userMessage, cancellationToken);
+            return Ok(response);
+        }
+
+        [HttpGet("{taskId:guid}/chatBot")]
+        public async Task<IActionResult> GetTaskChatBotContext(Guid taskId, CancellationToken cancellationToken)
+        {
+            List<string> response = await _serviceManager.TaskService.GetTaskChatBotContext(taskId, cancellationToken);
+            return Ok(response);
+        }
+
+        [HttpGet("{taskId:guid}/chatBot/conversation")]
+        public async Task<IActionResult> GetConversation(Guid taskId, CancellationToken cancellationToken)
+        {
+            List<string> response = await _serviceManager.TaskService.GetConversation(taskId, cancellationToken);
+            return Ok(response);
+        }
+
+        [HttpDelete("{taskId:guid}/chatBot")]
+        public async Task<IActionResult> DeleteTaskChatBotContext(Guid taskId, CancellationToken cancellationToken)
+        {
+            await _serviceManager.TaskService.DeleteTaskChatBotContext(taskId, cancellationToken);
+            return NoContent();
+        }
     }
 }
