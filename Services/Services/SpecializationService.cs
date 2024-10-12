@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Services.Services
 {
-    class SpecializationService : ISpecializationService
+    public class SpecializationService : ISpecializationService
     {
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
