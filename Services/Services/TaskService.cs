@@ -180,7 +180,7 @@ namespace Services.Services
                     $"\n Описание задачи: {task.Description}." +
                     $"\n Дополнительные требования/объяснения: {userMessage}.";
 
-                var response = _chat.CompletionsAsync(taskInfo).Result;
+                var response = await _chat.CompletionsAsync(taskInfo);
 
                 string stringResponse = response.choices.LastOrDefault().message.content;
 
@@ -201,7 +201,7 @@ namespace Services.Services
             messageContent = new MessageContent("user", userMessage);
             messageQuery.messages.Add(messageContent);
 
-            Response? responseBig = _chat.CompletionsAsync(messageQuery).Result;
+            Response? responseBig = await _chat.CompletionsAsync(messageQuery);
             string stringResponseBig = responseBig.choices.LastOrDefault().message.content;
 
             task.ContextMessages.Add(userMessage);
