@@ -20,7 +20,6 @@ namespace Services.Services
 {
     public class TaskService : ITaskService
     {
-        private static readonly bool MustCreateChatBot = true;
         private readonly GigaChat _chat;
 
         private readonly IRepositoryManager _repositoryManager;
@@ -116,6 +115,11 @@ namespace Services.Services
 
         public async Task<List<TaskDto>> GetAllTasksForUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
+            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            if (user == null)
+            {
+                throw new UserNotFoundException(userId);
+            }
             var tasks = await _repositoryManager.TaskRepository.GetAllTasksForUserAsync(userId, cancellationToken);
             return _mapper.Map<List<TaskDto>>(tasks);
         }
