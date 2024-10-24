@@ -42,10 +42,10 @@ namespace ProjectTests.ServiceTests
         private readonly static Guid specializationId = Guid.NewGuid();
         private readonly static DateTime dateCreated = DateTime.UtcNow;
         private readonly static DateTime dateEnd = dateCreated.AddMinutes(10);
-        private readonly EntityTask task = new EntityTask { Id = taskId, Title = "taskTitle", ColumnId = columnId, DateCreated = dateCreated, DateEnd = dateEnd, Priority = Domain.Entities.Enums.Priority.Medium, Status = Domain.Entities.Enums.Status.OnQueue, Description = "description" };
-        private readonly TaskDto taskDto = new TaskDto(taskId, "taskTitle", "description", Domain.Entities.Enums.Priority.Medium, Domain.Entities.Enums.Status.OnQueue, dateCreated, dateEnd, userId, columnId);
+        private readonly EntityTask task = new EntityTask { Id = taskId, Title = "taskTitle", ColumnId = columnId, DateCreated = dateCreated, DateEnd = dateEnd, Priority = Domain.Entities.Enums.Priority.Medium, Description = "description" };
+        private readonly TaskDto taskDto = new TaskDto(taskId, "taskTitle", "description", Domain.Entities.Enums.Priority.Medium, dateCreated, dateEnd, userId, columnId);
         private readonly TaskDtoForCreate taskDtoForCreate = new TaskDtoForCreate("taskTitle", "description", Domain.Entities.Enums.Priority.Medium, dateEnd, userId, columnId);
-        private readonly TaskDtoForUpdate taskDtoForUpdate = new TaskDtoForUpdate("newTitle", "newDescription", null, null, null, userId, columnId);
+        private readonly TaskDtoForUpdate taskDtoForUpdate = new TaskDtoForUpdate("newTitle", "newDescription", null, null, userId, columnId);
         private readonly User user = new User { Id = userId, Email = "email@email", Password = "password", SpecializationId = specializationId};
         private readonly Column column = new Column { Id = columnId, Title = "columnTitle", ProjectId = projectId };
         private readonly Project project = new Project { Id = projectId, Name = "proj"};

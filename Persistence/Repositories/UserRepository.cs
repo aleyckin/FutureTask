@@ -19,6 +19,7 @@ namespace Persistence.Repositories
         public async Task<List<User>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
             return await _dbContext.Users
+                .Include(x => x.Specialization)
                 .Include(x => x.Tasks)
                 .Include(x => x.ProjectUsers)
                 .ThenInclude(x => x.Project)
@@ -28,6 +29,7 @@ namespace Persistence.Repositories
         public async Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Users
+                .Include(x => x.Specialization)
                 .Include(x => x.Tasks)
                 .Include(x => x.ProjectUsers)
                 .ThenInclude(x => x.Project)
@@ -37,6 +39,7 @@ namespace Persistence.Repositories
         public async Task<User> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Users
+                .Include(x => x.Specialization)
                 .Include(x => x.Tasks)
                 .Include(x => x.ProjectUsers)
                 .ThenInclude(x => x.Project)

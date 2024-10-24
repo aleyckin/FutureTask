@@ -25,10 +25,6 @@ namespace Services.Validators.TaskValidators
                 .IsInEnum().WithMessage("Priority must be 'Low', 'Medium', or 'High'.")
                 .When(task => task.Priority.HasValue);
 
-            RuleFor(task => task.Status)
-                .IsInEnum().WithMessage("Status must be valid.")
-                .When(task => task.Status.HasValue);
-
             RuleFor(task => task.DateEnd)
                 .GreaterThan(DateTime.UtcNow).WithMessage("End date must be in the future.")
                 .When(task => task.DateEnd.HasValue);

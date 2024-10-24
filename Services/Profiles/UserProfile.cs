@@ -15,7 +15,9 @@ namespace Services.Profiles
     {
         public UserProfile()
         {
-            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<User, UserDto>()
+                .ForMember(dest => dest.SpecializationName, opt => opt.MapFrom(src => src.Specialization.Name));
+            CreateMap<UserDto, User>();
             CreateMap<User, UserDtoForCreate>().ReverseMap();
             CreateMap<User, UserDtoForUpdate>();
             CreateMap<User, LoginDto>().ReverseMap();

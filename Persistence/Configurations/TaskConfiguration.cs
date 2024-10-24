@@ -16,7 +16,6 @@ namespace Persistence.Configurations
             builder.Property(task => task.Title).HasMaxLength(30).IsRequired();
             builder.Property(task => task.Description).IsRequired();
             builder.Property(task => task.Priority).IsRequired();
-            builder.Property(task => task.Status).IsRequired();
             builder.Property(task => task.DateCreated).IsRequired();
             builder.Property(task => task.DateEnd).IsRequired();
 

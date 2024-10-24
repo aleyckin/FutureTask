@@ -150,7 +150,7 @@ namespace ProjectTests.ServiceTests
             Guid specializationId = Guid.NewGuid();
             List<UserDto> usersDtos = new List<UserDto>();
             List<User> users = new List<User>();
-            var specialization = new Specialization { Id = specializationId, Name = "spec", Users = users };
+            var specialization = new Specialization { Id = specializationId, Name = "spec" };
             var specializationDto = new SpecializationDto(specializationId, "spec", usersDtos);
             _mapperMock.Setup(m => m.Map<SpecializationDto>(specialization)).Returns(specializationDto);
             _repositoryManagerMock.Setup(r => r.SpecializationRepository.GetSpecializationByIdAsync(specializationId, It.IsAny<CancellationToken>())).ReturnsAsync(specialization);

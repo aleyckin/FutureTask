@@ -4,6 +4,9 @@ services:
     build:
       context: .
       dockerfile: Web/Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
   db:
     image: postgres:latest
     container_name: db
@@ -15,3 +18,15 @@ services:
         - ./.containers/db-db:/var/lib/postgresql/data
     ports:
         - 5432:5432
+  frontend:
+    image: vue-frontend
+    build:
+      context: ../FutureTask-Frontend/my-vue-app
+      dockerfile: Dockerfile.dev
+    environment:
+      - HOST=0.0.0.0
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ../FutureTask-Frontend/my-vue-app:/my-vue-app
+    ports:
+      - "8080:8080" 

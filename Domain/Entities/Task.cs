@@ -11,7 +11,6 @@ namespace Domain.Entities
     {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public Status Status { get; set; } = Status.OnQueue;
         public Priority Priority { get; set; } = Priority.Medium;
         public DateTime DateCreated { get; set; } = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
         public DateTime DateEnd { get; set; }

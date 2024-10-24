@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Contracts.Dtos.SpecializationDtos
 {
-    public record SpecializationDto(Guid Id, string Name, List<UserDto> Users) { }
+    public record SpecializationDto(Guid Id, string Name) { }
     public record SpecializationDtoForCreate(string Name) { }
     public record SpecializationDtoForUpdate(string? Name) { }
 }

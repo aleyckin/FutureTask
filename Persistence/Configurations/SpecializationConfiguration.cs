@@ -15,10 +15,6 @@ namespace Persistence.Configurations
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name);
-            builder.HasMany(x => x.Users)
-                .WithOne(y => y.Specialization)
-                .HasForeignKey(x => x.SpecializationId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
