@@ -35,7 +35,7 @@ namespace ProjectTests.ServiceTests
             // Arrange
             var specializationDtoForCreate = new SpecializationDtoForCreate("TestSpecialization");
             var specialization = new Specialization { Name = "TestSpecialization" };
-            var specializationDto = new SpecializationDto(Guid.NewGuid(), "TestSpecialization", new List<UserDto> { });
+            var specializationDto = new SpecializationDto(Guid.NewGuid(), "TestSpecialization");
 
             _mapperMock.Setup(m => m.Map<Specialization>(specializationDtoForCreate)).Returns(specialization);
             _mapperMock.Setup(m => m.Map<SpecializationDto>(specialization)).Returns(specializationDto);
@@ -129,7 +129,7 @@ namespace ProjectTests.ServiceTests
             // Arrange
             Guid specializationId = Guid.NewGuid();
             var specialization = new Specialization { Id = specializationId, Name = "spec" };
-            var specializationDto = new SpecializationDto(specializationId, "spec", new List<UserDto>());
+            var specializationDto = new SpecializationDto(specializationId, "spec");
             var specializations = new List<Specialization> { specialization };
             _mapperMock.Setup(m => m.Map<IEnumerable<SpecializationDto>>(specializations)).Returns(new List<SpecializationDto> { specializationDto });
             _repositoryManagerMock.Setup(r => r.SpecializationRepository.GetAllSpecializationsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(specializations);
@@ -151,7 +151,7 @@ namespace ProjectTests.ServiceTests
             List<UserDto> usersDtos = new List<UserDto>();
             List<User> users = new List<User>();
             var specialization = new Specialization { Id = specializationId, Name = "spec" };
-            var specializationDto = new SpecializationDto(specializationId, "spec", usersDtos);
+            var specializationDto = new SpecializationDto(specializationId, "spec");
             _mapperMock.Setup(m => m.Map<SpecializationDto>(specialization)).Returns(specializationDto);
             _repositoryManagerMock.Setup(r => r.SpecializationRepository.GetSpecializationByIdAsync(specializationId, It.IsAny<CancellationToken>())).ReturnsAsync(specialization);
 

@@ -40,7 +40,7 @@ namespace ProjectTests.ServiceTests
             Guid specializationId = Guid.NewGuid();
             var user = new User { Id = userId, Email = "email@email", Password = "password", UserRole = UserRole.RegularUser, SpecializationId = specializationId };
             var userDtoForCreate = new UserDtoForCreate("email@email", "password", specializationId, UserRole.RegularUser);
-            var userDto = new UserDto(userId, "email@email", "password", UserRole.RegularUser, specializationId);
+            var userDto = new UserDto(userId, "email@email", "password", UserRole.RegularUser, "adminSpecialization");
             var specialization = new Specialization { Id = specializationId, Name = "spec" };
             _mapperMock.Setup(m => m.Map<User>(userDtoForCreate)).Returns(user);
             _mapperMock.Setup(m => m.Map<UserDto>(user)).Returns(userDto);
@@ -97,7 +97,7 @@ namespace ProjectTests.ServiceTests
             Guid userId = Guid.NewGuid();
             Guid specializationId = Guid.NewGuid();
             var user = new User { Id = userId, Email = "email@email", Password = "password", UserRole = UserRole.RegularUser, SpecializationId = specializationId };
-            var userDto = new UserDto(userId, "email@email", "password", UserRole.RegularUser, specializationId);
+            var userDto = new UserDto(userId, "email@email", "password", UserRole.RegularUser, "adminSpecialization");
             _repositoryManagerMock.Setup(r => r.UserRepository.GetUserByIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(user);
             _mapperMock.Setup(m => m.Map<UserDto>(user)).Returns(userDto);
 
@@ -128,7 +128,7 @@ namespace ProjectTests.ServiceTests
             Guid userId = Guid.NewGuid();
             Guid specializationId = Guid.NewGuid();
             var user = new User { Id = userId, Email = "email@email", Password = "password", UserRole = UserRole.RegularUser, SpecializationId = specializationId };
-            var userDto = new UserDto(userId, "email@email", "password", UserRole.RegularUser, specializationId);
+            var userDto = new UserDto(userId, "email@email", "password", UserRole.RegularUser, "adminSpecialization");
             _repositoryManagerMock.Setup(r => r.UserRepository.GetUserByEmailAsync("email@email", It.IsAny<CancellationToken>())).ReturnsAsync(user);
             _mapperMock.Setup(m => m.Map<UserDto>(user)).Returns(userDto);
 
@@ -228,7 +228,7 @@ namespace ProjectTests.ServiceTests
             byte[] salt;
             string hashedPassword = PasswordHasher.HashPassword(password, out salt);
             var user = new User { Id = userId, Email = "email@email", Password = hashedPassword, PasswordSalt = salt, SpecializationId = specializationId };
-            var userDto = new UserDto(userId, "email@email", "password", UserRole.RegularUser, specializationId);
+            var userDto = new UserDto(userId, "email@email", "password", UserRole.RegularUser, "adminSpecialization");
             _repositoryManagerMock.Setup(r => r.UserRepository.GetUserByEmailAsync("email@email", It.IsAny<CancellationToken>())).ReturnsAsync(user);
             _mapperMock.Setup(m => m.Map<UserDto>(user)).Returns(userDto);
 
