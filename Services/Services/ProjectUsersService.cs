@@ -52,12 +52,12 @@ namespace Services.Services
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        public async System.Threading.Tasks.Task DeleteUserFromProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default)
+        public async System.Threading.Tasks.Task DeleteUserFromProjectAsync(Guid UserId, Guid ProjectId, CancellationToken cancellationToken = default)
         {
-            var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(projectUsersDto.UserId, projectUsersDto.ProjectId, cancellationToken);
+            var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(UserId, ProjectId, cancellationToken);
             if (projectUser == null)
             {
-                throw new ProjectUsersNotFoundException(projectUsersDto.UserId, projectUsersDto.ProjectId);
+                throw new ProjectUsersNotFoundException(UserId, ProjectId);
             }
             _repositoryManager.ProjectUsersRepository.Remove(projectUser);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);

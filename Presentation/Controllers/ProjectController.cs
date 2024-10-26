@@ -59,8 +59,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
-        [HttpGet("projectUsers/users{projectId:guid}")]
+        [HttpGet("projectUsers/{projectId:guid}/users")]
         public async Task<IActionResult> GetAllUsersForProject(Guid projectId, CancellationToken cancellationToken)
         {
             var users = await _serviceManager.ProjectUsersService.GetAllUsersByProject(projectId, cancellationToken);
@@ -85,18 +84,18 @@ namespace Presentation.Controllers
         }
 
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
-        [HttpDelete("projectUsers/DeleteUserFromProject:{projectId:guid}")]
-        public async Task<IActionResult> DeleteUserFromProject(Guid projectId, [FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
+        [HttpDelete("projectUsers/deleteUserFromProject:{projectId:guid}")]
+        public async Task<IActionResult> DeleteUserFromProject(Guid userId, Guid projectId, CancellationToken cancellationToken)
         {
-            await _serviceManager.ProjectUsersService.DeleteUserFromProjectAsync(projectUsersDto, cancellationToken);
+            await _serviceManager.ProjectUsersService.DeleteUserFromProjectAsync(userId, projectId, cancellationToken);
             return NoContent();
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpDelete("projectUsers/DeleteUserFromProjectAsAdmin")]
-        public async Task<IActionResult> DeleteUserFromProjectAsAdmin([FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
+        [HttpDelete("projectUsers/deleteUserFromProjectAsAdmin/{userId:guid}/{projectId:guid}")]
+        public async Task<IActionResult> DeleteUserFromProjectAsAdmin(Guid userId, Guid projectId, CancellationToken cancellationToken)
         {
-            await _serviceManager.ProjectUsersService.DeleteUserFromProjectAsync(projectUsersDto, cancellationToken);
+            await _serviceManager.ProjectUsersService.DeleteUserFromProjectAsync(userId, projectId, cancellationToken);
             return NoContent();
         }
     }
