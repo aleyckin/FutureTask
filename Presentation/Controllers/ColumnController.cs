@@ -30,8 +30,7 @@ namespace Presentation.Controllers
             return Ok(columns);
         }
 
-        [Authorize]
-        [HttpGet("ForProject:{projectId:guid}")]
+        [HttpGet("forProject/{projectId:guid}")]
         public async Task<IActionResult> GetColumnsForProject(Guid projectId, CancellationToken cancellationToken)
         {
             var columns = await _serviceManager.ColumnService.GetAllColumnsForProjectAsync(projectId, cancellationToken);
@@ -63,7 +62,7 @@ namespace Presentation.Controllers
         }
 
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
-        [HttpDelete("{projectId:guid}&&{columnId:guid}")]
+        [HttpDelete("{projectId:guid}/{columnId:guid}")]
         public async Task<IActionResult> DeleteColumn(Guid projectId, Guid columnId, CancellationToken cancellationToken)
         {
             await _serviceManager.ColumnService.DeleteAsync(projectId, columnId, cancellationToken);

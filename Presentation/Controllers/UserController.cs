@@ -97,7 +97,7 @@ namespace Presentation.Controllers
 
             var token = _serviceManager.UserService.GenerateJwtToken(userDto);
 
-            return Ok(token);
+            return Ok(new { token, user = userDto });
         }
     }
 }

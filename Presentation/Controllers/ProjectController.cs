@@ -27,7 +27,6 @@ namespace Presentation.Controllers
             return Ok(projects);
         }
 
-        [Authorize(Roles = "Administrator")]
         [HttpGet("{projectId:guid}")]
         public async Task<IActionResult> GetProjectById(Guid projectId, CancellationToken cancellationToken)
         {

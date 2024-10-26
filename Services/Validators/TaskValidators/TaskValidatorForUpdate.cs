@@ -18,7 +18,7 @@ namespace Services.Validators.TaskValidators
                 .When(task => task.Title != null);
 
             RuleFor(task => task.Description)
-                .MaximumLength(500).WithMessage("The description must consist of less or equal to 500 characters.")
+                .MaximumLength(1000).WithMessage("The description must consist of less or equal to 500 characters.")
                 .When(task => task.Description != null);
 
             RuleFor(task => task.Priority)
@@ -28,10 +28,6 @@ namespace Services.Validators.TaskValidators
             RuleFor(task => task.DateEnd)
                 .GreaterThan(DateTime.UtcNow).WithMessage("End date must be in the future.")
                 .When(task => task.DateEnd.HasValue);
-
-            RuleFor(task => task.UserId)
-                .NotEmpty().WithMessage("UserId is required.")
-                .When(task => task.UserId.HasValue);
 
             RuleFor(task => task.ColumnId)
                 .NotEmpty().WithMessage("ColumnId is required.")

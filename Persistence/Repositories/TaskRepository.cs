@@ -28,6 +28,20 @@ namespace Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Domain.Entities.Task>> GetAllTasksForUserInColumnAsync(Guid userId, Guid columnId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Tasks
+                .Where(x => x.UserId == userId && x.ColumnId == columnId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Domain.Entities.Task>> GetAllTasksInColumnAsync(Guid columnId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Tasks
+                .Where(x => x.ColumnId == columnId)
+                .ToListAsync();
+        }
+
         public async Task<Domain.Entities.Task> GetTaskByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Tasks

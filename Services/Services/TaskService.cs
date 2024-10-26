@@ -124,6 +124,23 @@ namespace Services.Services
             return _mapper.Map<List<TaskDto>>(tasks);
         }
 
+        public async Task<List<TaskDto>> GetAllTasksForUserInColumnAsync(Guid userId, Guid columnId, CancellationToken cancellationToken = default)
+        {
+            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            if (user == null)
+            {
+                throw new UserNotFoundException(userId);
+            }
+            var tasks = await _repositoryManager.TaskRepository.GetAllTasksForUserInColumnAsync(userId, columnId, cancellationToken);
+            return _mapper.Map<List<TaskDto>>(tasks);
+        }
+
+        public async Task<List<TaskDto>> GetAllTasksInColumnAsync(Guid columnId, CancellationToken cancellationToken = default)
+        {
+            var tasks = await _repositoryManager.TaskRepository.GetAllTasksInColumnAsync(columnId, cancellationToken);
+            return _mapper.Map<List<TaskDto>>(tasks);
+        }
+
         public async Task<TaskDto> GetTaskById(Guid taskId, CancellationToken cancellationToken = default)
         {
             var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
@@ -150,13 +167,17 @@ namespace Services.Services
                 throw new UserNotFoundException((Guid)taskDtoForUpdate.UserId);
             }
 
-            var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync((Guid)taskDtoForUpdate.ColumnId, cancellationToken);
-            if (column == null)
+            if (taskDtoForUpdate.ColumnId != Guid.Empty)
             {
-                throw new ColumnNotFoundException((Guid)taskDtoForUpdate.ColumnId);
+                var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync((Guid)taskDtoForUpdate.ColumnId, cancellationToken);
+                if (column == null)
+                {
+                    throw new ColumnNotFoundException((Guid)taskDtoForUpdate.ColumnId);
+                }
             }
 
             _mapper.Map(taskDtoForUpdate, task);
+            if (taskDtoForUpdate.DateEnd != null) { task.DateEnd = DateTime.SpecifyKind((DateTime)taskDtoForUpdate.DateEnd, DateTimeKind.Utc); }
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
         }
 

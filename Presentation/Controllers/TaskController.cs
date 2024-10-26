@@ -31,7 +31,6 @@ namespace Presentation.Controllers
             return Ok(tasks);
         }
 
-        [Authorize]
         [HttpGet("userTasks")]
         public async Task<IActionResult> GetUserTasks(CancellationToken cancellationToken)
         {
@@ -42,6 +41,26 @@ namespace Presentation.Controllers
             }
             var userId = new Guid(userIdClaim);
             var tasks = await _serviceManager.TaskService.GetAllTasksForUserAsync(userId, cancellationToken);
+            return Ok(tasks);
+        }
+
+        [HttpGet("allTasksInColumn/{columnId:guid}")]
+        public async Task<IActionResult> GetAllTasksInColumn(Guid columnId, CancellationToken cancellationToken)
+        {
+            var tasks = await _serviceManager.TaskService.GetAllTasksInColumnAsync(columnId, cancellationToken);
+            return Ok(tasks);
+        }
+
+        [HttpGet("userTasksInColumn/{columnId:guid}")]
+        public async Task<IActionResult> GetAllTasksForUserInColumn(Guid columnId, CancellationToken cancellationToken)
+        {
+            var userIdClaim = User.FindFirst("userId")?.Value;
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+            var userId = new Guid(userIdClaim);
+            var tasks = await _serviceManager.TaskService.GetAllTasksForUserInColumnAsync(userId, columnId, cancellationToken);
             return Ok(tasks);
         }
 
@@ -67,7 +86,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{taskId:guid}&&{projectId:guid}")]
+        [HttpDelete("{taskId:guid}/{projectId:guid}")]
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
         public async Task<IActionResult> DeleteTask(Guid taskId, Guid projectId, CancellationToken cancellationToken)
         {

@@ -25,9 +25,6 @@ namespace Services.Validators.TaskValidators
             RuleFor(task => task.DateEnd)
                 .NotEmpty().WithMessage("DateEnd is required.");
 
-            RuleFor(task => task.UserId)
-                .NotEmpty().WithMessage("UserId is required.");
-
             RuleFor(task => task.ColumnId)
                 .NotEmpty().WithMessage("ColumnId is required.");
         }
