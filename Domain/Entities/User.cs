@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Enums;
+using Domain.Entities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

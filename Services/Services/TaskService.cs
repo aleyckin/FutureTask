@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.TaskDtos;
 using Contracts.Dtos.UserDtos;
+using Domain.Entities.Helpers;
 using Domain.Exceptions.ColumnException;
 using Domain.Exceptions.ProjectUsersExceptions;
 using Domain.Exceptions.TaskExceptions;
@@ -210,7 +211,11 @@ namespace Services.Services
                 string stringResponse = response.choices.LastOrDefault().message.content;
 
                 task.ContextMessages = new List<string> { taskInfo };
-                task.Conversation = new List<string> { taskInfo, stringResponse };
+                task.Conversation = new List<Message> 
+                { 
+                    new Message { Sender = "user", Text = taskInfo },
+                    new Message { Sender = "bot", Text = stringResponse }
+                };
                 await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
 
                 return stringResponse;
@@ -230,14 +235,14 @@ namespace Services.Services
             string stringResponseBig = responseBig.choices.LastOrDefault().message.content;
 
             task.ContextMessages.Add(userMessage);
-            task.Conversation.Add(userMessage);
-            task.Conversation.Add(stringResponseBig);
+            task.Conversation.Add(new Message { Sender = "user", Text = userMessage });
+            task.Conversation.Add(new Message { Sender = "bot", Text = stringResponseBig });
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return stringResponseBig;
         }
 
-        public async Task<List<string>> GetConversation(Guid taskId, CancellationToken cancellationToken = default)
+        public async Task<List<Message>> GetConversation(Guid taskId, CancellationToken cancellationToken = default)
         {
             var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
@@ -247,7 +252,7 @@ namespace Services.Services
 
             if (task.Conversation == null || task.Conversation.Count == 0)
             {
-                throw new ChatBotContextException(taskId);
+                task.Conversation = new List<Message>();
             }
 
             return task.Conversation;

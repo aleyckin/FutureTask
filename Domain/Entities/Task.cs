@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Enums;
+using Domain.Entities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,6 @@ namespace Domain.Entities
         public Guid ColumnId { get; set; }
         public Column? Column { get; set; }
         public List<string>? ContextMessages { get; set; }
-        public List<string>? Conversation { get; set; }
+        public List<Message>? Conversation { get; set; }
     }
 }

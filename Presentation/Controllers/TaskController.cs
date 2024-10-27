@@ -95,24 +95,24 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("{taskId:guid}/chatBot")]
-        public async Task<IActionResult> GetChatBotResponse(Guid taskId, string userMessage, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetChatBotResponse(Guid taskId, [FromBody] string userMessage, CancellationToken cancellationToken)
         {
-            string response = await _serviceManager.TaskService.GetResponseByChatBot(taskId, userMessage, cancellationToken);
-            return Ok(response);
+            var response = await _serviceManager.TaskService.GetResponseByChatBot(taskId, userMessage, cancellationToken);
+            return Ok(new { responseMessage = response });
         }
 
         [HttpGet("{taskId:guid}/chatBot")]
         public async Task<IActionResult> GetTaskChatBotContext(Guid taskId, CancellationToken cancellationToken)
         {
-            List<string> response = await _serviceManager.TaskService.GetTaskChatBotContext(taskId, cancellationToken);
-            return Ok(response);
+            var response = await _serviceManager.TaskService.GetTaskChatBotContext(taskId, cancellationToken);
+            return Ok(new { responseMessage = response });
         }
 
         [HttpGet("{taskId:guid}/chatBot/conversation")]
         public async Task<IActionResult> GetConversation(Guid taskId, CancellationToken cancellationToken)
         {
-            List<string> response = await _serviceManager.TaskService.GetConversation(taskId, cancellationToken);
-            return Ok(response);
+            var response = await _serviceManager.TaskService.GetConversation(taskId, cancellationToken);
+            return Ok(new { responseMessage = response });
         }
 
         [HttpDelete("{taskId:guid}/chatBot")]
