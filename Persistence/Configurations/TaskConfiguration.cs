@@ -19,7 +19,9 @@ namespace Persistence.Configurations
             builder.Property(task => task.DateCreated).IsRequired();
             builder.Property(task => task.DateEnd).IsRequired();
 
-            builder.OwnsMany(t => t.Conversation);
+            builder.HasMany(task => task.Conversation)
+                .WithOne(message => message.Task)
+                .HasForeignKey(message => message.TaskId);
 
             builder.HasOne(task => task.Column)
                 .WithMany(column => column.Tasks)

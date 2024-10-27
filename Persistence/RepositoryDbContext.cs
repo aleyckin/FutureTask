@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistance
@@ -12,6 +13,7 @@ namespace Persistance
         public DbSet<Specialization> Specializations { get; set; }
         public DbSet<Domain.Entities.Task> Tasks { get; set; }
         public DbSet<Column> Columns { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

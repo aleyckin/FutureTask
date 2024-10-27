@@ -20,6 +20,6 @@ namespace Domain.Entities
         public Guid ColumnId { get; set; }
         public Column? Column { get; set; }
         public List<string>? ContextMessages { get; set; }
-        public List<Message>? Conversation { get; set; }
+        public List<Message> Conversation { get; set; } = new List<Message>();
     }
 }

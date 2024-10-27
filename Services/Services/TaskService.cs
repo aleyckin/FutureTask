@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Contracts.Dtos.MessageDtos;
 using Contracts.Dtos.TaskDtos;
 using Contracts.Dtos.UserDtos;
 using Domain.Entities.Helpers;
@@ -201,7 +202,6 @@ namespace Services.Services
                 var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(column.ProjectId, cancellationToken);
 
                 string taskInfo = $"Название проекта: {project.Name} " +
-                    $"\n Уточнение тематики: {column.Title} " +
                     $"\n Название задачи, которую нужно решить: {task.Title} " +
                     $"\n Описание задачи: {task.Description}." +
                     $"\n Дополнительные требования/объяснения: {userMessage}.";
@@ -213,8 +213,8 @@ namespace Services.Services
                 task.ContextMessages = new List<string> { taskInfo };
                 task.Conversation = new List<Message> 
                 { 
-                    new Message { Sender = "user", Text = taskInfo },
-                    new Message { Sender = "bot", Text = stringResponse }
+                    new Message { Sender = "user", Text = taskInfo, Timestamp = DateTime.UtcNow },
+                    new Message { Sender = "bot", Text = stringResponse, Timestamp = DateTime.UtcNow }
                 };
                 await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -235,14 +235,14 @@ namespace Services.Services
             string stringResponseBig = responseBig.choices.LastOrDefault().message.content;
 
             task.ContextMessages.Add(userMessage);
-            task.Conversation.Add(new Message { Sender = "user", Text = userMessage });
-            task.Conversation.Add(new Message { Sender = "bot", Text = stringResponseBig });
+            task.Conversation.Add(new Message { Sender = "user", Text = userMessage, Timestamp = DateTime.UtcNow });
+            task.Conversation.Add(new Message { Sender = "bot", Text = stringResponseBig, Timestamp = DateTime.UtcNow });
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return stringResponseBig;
         }
 
-        public async Task<List<Message>> GetConversation(Guid taskId, CancellationToken cancellationToken = default)
+        public async Task<List<MessageDto>> GetConversation(Guid taskId, CancellationToken cancellationToken = default)
         {
             var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
@@ -250,12 +250,8 @@ namespace Services.Services
                 throw new TaskNotFoundException(taskId);
             }
 
-            if (task.Conversation == null || task.Conversation.Count == 0)
-            {
-                task.Conversation = new List<Message>();
-            }
-
-            return task.Conversation;
+            var conversation = await _repositoryManager.MessageRepository.GetAllMessagesForTaskAsync(taskId, cancellationToken);
+            return _mapper.Map<List<MessageDto>>(conversation);
         }
 
         public async Task<List<string>> GetTaskChatBotContext(Guid taskId, CancellationToken cancellationToken = default)

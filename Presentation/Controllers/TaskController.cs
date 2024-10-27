@@ -112,7 +112,7 @@ namespace Presentation.Controllers
         public async Task<IActionResult> GetConversation(Guid taskId, CancellationToken cancellationToken)
         {
             var response = await _serviceManager.TaskService.GetConversation(taskId, cancellationToken);
-            return Ok(new { responseMessage = response });
+            return Ok(response);
         }
 
         [HttpDelete("{taskId:guid}/chatBot")]

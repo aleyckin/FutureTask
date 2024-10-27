@@ -19,6 +19,7 @@ namespace Persistence.Repositories
         private IColumnRepository _columnRepository;
         private ITaskRepository _taskRepository;
         private IProjectUsersRepository _projectUserRepository;
+        private IMessageRepository _messageRepository;
 
         public RepositoryManager(RepositoryDbContext dbContext, IUnitOfWork unitOfWork)
         {
@@ -32,6 +33,7 @@ namespace Persistence.Repositories
         public IColumnRepository ColumnRepository => _columnRepository ??= new ColumnRepository(_dbContext);
         public ITaskRepository TaskRepository => _taskRepository ??= new TaskRepository(_dbContext);
         public IProjectUsersRepository ProjectUsersRepository => _projectUserRepository ??= new ProjectUsersRepository(_dbContext);
+        public IMessageRepository MessageRepository => _messageRepository ??= new MessageRepository(_dbContext);
         public IUnitOfWork UnitOfWork => _unitOfWork;   
     }
 }

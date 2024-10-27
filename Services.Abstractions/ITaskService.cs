@@ -1,6 +1,6 @@
-﻿using Contracts.Dtos.ProjectDtos;
+﻿using Contracts.Dtos.MessageDtos;
+using Contracts.Dtos.ProjectDtos;
 using Contracts.Dtos.TaskDtos;
-using Domain.Entities.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +22,6 @@ namespace Services.Abstractions
         Task<string> GetResponseByChatBot(Guid taskId, string userMessage, CancellationToken cancellationToken = default);
         Task<List<string>> GetTaskChatBotContext(Guid taskId, CancellationToken cancellationToken = default);
         Task DeleteTaskChatBotContext(Guid taskId, CancellationToken cancellationToken = default);
-        Task<List<Message>> GetConversation(Guid taskId, CancellationToken cancellationToken = default);
+        Task<List<MessageDto>> GetConversation(Guid taskId, CancellationToken cancellationToken = default);
     }
 }

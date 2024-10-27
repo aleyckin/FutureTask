@@ -45,6 +45,7 @@ namespace Persistence.Repositories
         public async Task<Domain.Entities.Task> GetTaskByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Tasks
+                .Include(x => x.Conversation)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
