@@ -191,9 +191,13 @@ namespace Services.Services
                 throw new TaskNotFoundException(taskId);
             }
 
-            if (_chat.Token == null)
+            if (_chat.Token == null || _chat.Token.ExpiresAt < ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds())
             {
-                await _chat.CreateTokenAsync();
+                try
+                {
+                    await _chat.CreateTokenAsync();
+                }
+                catch (Exception) { throw new ChatBotUnavailableException(); }
             }
 
             if (task.ContextMessages == null || task.ContextMessages.Count == 0)
@@ -205,10 +209,13 @@ namespace Services.Services
                     $"\n Название задачи, которую нужно решить: {task.Title} " +
                     $"\n Описание задачи: {task.Description}." +
                     $"\n Дополнительные требования/объяснения: {userMessage}.";
-
-                var response = await _chat.CompletionsAsync(taskInfo);
-
-                string stringResponse = response.choices.LastOrDefault().message.content;
+                string stringResponse;
+                try
+                {
+                    var response = await _chat.CompletionsAsync(taskInfo);
+                    stringResponse = response.choices.LastOrDefault().message.content;
+                }
+                catch (Exception) { throw new ChatBotUnavailableException(); }
 
                 task.ContextMessages = new List<string> { taskInfo };
                 task.Conversation = new List<Message> 
@@ -219,9 +226,9 @@ namespace Services.Services
                 await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
 
                 return stringResponse;
-            }         
+            }
 
-            MessageQuery messageQuery = new MessageQuery();
+            MessageQuery messageQuery = new MessageQuery(max_tokens: 2048L);
             MessageContent messageContent;
             foreach (var message in task.ContextMessages)
             {
