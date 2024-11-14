@@ -24,15 +24,38 @@ namespace Services.Services
     {
         private readonly GigaChat _chat;
 
-        private readonly IRepositoryManager _repositoryManager;
+        private readonly ITaskRepository _taskRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IProjectRepository _projectRepository;
+        private readonly IProjectUsersRepository _projectUsersRepository;
+        private readonly IColumnRepository _columnRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMessageRepository _messageRepository;
         private readonly IMapper _mapper;
         private readonly IValidatorManager _validatorManager;
         private readonly INotificationService _notificationService;
         private readonly IConfiguration _configuration;
 
-        public TaskService(IRepositoryManager repositoryManager, IMapper mapper, IValidatorManager validatorManager, INotificationService notificationService, IConfiguration configuration, GigaChat chat)
+        public TaskService(ITaskRepository taskRepository,
+            IUserRepository userRepository,
+            IProjectRepository projectRepository,
+            IColumnRepository columnRepository,
+            IProjectUsersRepository projectUsersRepository,
+            IUnitOfWork unitOfWork,
+            IMessageRepository messageRepository,
+            IMapper mapper,
+            IValidatorManager validatorManager,
+            INotificationService notificationService,
+            IConfiguration configuration,
+            GigaChat chat)
         {
-            _repositoryManager = repositoryManager;
+            _taskRepository = taskRepository;
+            _userRepository = userRepository;
+            _projectRepository = projectRepository;
+            _projectUsersRepository = projectUsersRepository;
+            _columnRepository = columnRepository;
+            _unitOfWork = unitOfWork;
+            _messageRepository = messageRepository;
             _mapper = mapper;
             _validatorManager = validatorManager;
             _notificationService = notificationService;
@@ -46,29 +69,29 @@ namespace Services.Services
             await _validatorManager.ValidateAsync(taskDtoForCreate, cancellationToken);
 
             //Проверяем существует ли вообще юзер, {Id} которого передали
-            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(taskDtoForCreate.UserId, cancellationToken);
+            var user = await _userRepository.GetUserByIdAsync(taskDtoForCreate.UserId, cancellationToken);
             if (user == null) 
             {
                 throw new UserNotFoundException(taskDtoForCreate.UserId);
             }
 
             //Проверяем приписан ли человек к проекту
-            var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(taskDtoForCreate.UserId, projectId, cancellationToken);
+            var projectUser = await _projectUsersRepository.GetProjectUser(taskDtoForCreate.UserId, projectId, cancellationToken);
             if (projectUser == null)
             {
                 throw new ProjectUsersNotFoundException(taskDtoForCreate.UserId, projectId);
             }
 
             //Проверяем существует ли вообще колонка, {Id} которой передали
-            var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(taskDtoForCreate.ColumnId, cancellationToken);
+            var column = await _columnRepository.GetColumnByIdAsync(taskDtoForCreate.ColumnId, cancellationToken);
             if (column == null)
             {
                 throw new ColumnNotFoundException(taskDtoForCreate.ColumnId);
             }
 
             //Проверяем принадлежит ли колонка, в которую мы пытаемся добавить Task, тому же проекту, в котором мы сейчас находимся(!!)
-            var CheckColumnOnProject = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
-            var ColumnProject = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(column.ProjectId, cancellationToken);
+            var CheckColumnOnProject = await _projectRepository.GetProjectByIdAsync(projectId, cancellationToken);
+            var ColumnProject = await _projectRepository.GetProjectByIdAsync(column.ProjectId, cancellationToken);
             if (CheckColumnOnProject != ColumnProject)
             {
                 throw new TaskCreatingErrorWithColumnDependency(taskDtoForCreate.ColumnId, projectId);
@@ -76,8 +99,8 @@ namespace Services.Services
 
             var task = _mapper.Map<Domain.Entities.Task>(taskDtoForCreate);
             task.DateEnd = DateTime.SpecifyKind(taskDtoForCreate.DateEnd, DateTimeKind.Utc);
-            _repositoryManager.TaskRepository.Insert(task);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _taskRepository.Insert(task);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             string subject = "New Task Created";
             string body = $"Dear {user.Email},\n\nA new task has been created for you: {task.Title}";
@@ -88,13 +111,13 @@ namespace Services.Services
 
         public async System.Threading.Tasks.Task DeleteAsync(Guid projectId, Guid taskId, CancellationToken cancellationToken = default)
         {
-            var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
+            var task = await _taskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
             {
                 throw new TaskNotFoundException(taskId);
             }
 
-            var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(task.ColumnId, cancellationToken);
+            var column = await _columnRepository.GetColumnByIdAsync(task.ColumnId, cancellationToken);
             if (column == null)
             {
                 throw new ColumnNotFoundException(task.ColumnId);
@@ -105,47 +128,47 @@ namespace Services.Services
                 throw new TaskCreatingErrorWithColumnDependency(task.ColumnId, projectId);
             }
 
-            _repositoryManager.TaskRepository.Remove(task);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _taskRepository.Remove(task);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<List<TaskDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var tasks = await _repositoryManager.TaskRepository.GetAllTasksAsync(cancellationToken);
+            var tasks = await _taskRepository.GetAllTasksAsync(cancellationToken);
             return _mapper.Map<List<TaskDto>>(tasks);
         }
 
         public async Task<List<TaskDto>> GetAllTasksForUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            var user = await _userRepository.GetUserByIdAsync(userId, cancellationToken);
             if (user == null)
             {
                 throw new UserNotFoundException(userId);
             }
-            var tasks = await _repositoryManager.TaskRepository.GetAllTasksForUserAsync(userId, cancellationToken);
+            var tasks = await _taskRepository.GetAllTasksForUserAsync(userId, cancellationToken);
             return _mapper.Map<List<TaskDto>>(tasks);
         }
 
         public async Task<List<TaskDto>> GetAllTasksForUserInColumnAsync(Guid userId, Guid columnId, CancellationToken cancellationToken = default)
         {
-            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            var user = await _userRepository.GetUserByIdAsync(userId, cancellationToken);
             if (user == null)
             {
                 throw new UserNotFoundException(userId);
             }
-            var tasks = await _repositoryManager.TaskRepository.GetAllTasksForUserInColumnAsync(userId, columnId, cancellationToken);
+            var tasks = await _taskRepository.GetAllTasksForUserInColumnAsync(userId, columnId, cancellationToken);
             return _mapper.Map<List<TaskDto>>(tasks);
         }
 
         public async Task<List<TaskDto>> GetAllTasksInColumnAsync(Guid columnId, CancellationToken cancellationToken = default)
         {
-            var tasks = await _repositoryManager.TaskRepository.GetAllTasksInColumnAsync(columnId, cancellationToken);
+            var tasks = await _taskRepository.GetAllTasksInColumnAsync(columnId, cancellationToken);
             return _mapper.Map<List<TaskDto>>(tasks);
         }
 
         public async Task<TaskDto> GetTaskById(Guid taskId, CancellationToken cancellationToken = default)
         {
-            var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
+            var task = await _taskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
             {
                 throw new TaskNotFoundException(taskId);
@@ -157,13 +180,13 @@ namespace Services.Services
         {
             await _validatorManager.ValidateAsync(taskDtoForUpdate, cancellationToken);
 
-            var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
+            var task = await _taskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
             {
                 throw new TaskNotFoundException(taskId);
             }
 
-            var user = await _repositoryManager.UserRepository.GetUserByIdAsync((Guid)taskDtoForUpdate.UserId, cancellationToken);
+            var user = await _userRepository.GetUserByIdAsync((Guid)taskDtoForUpdate.UserId, cancellationToken);
             if (user == null)
             {
                 throw new UserNotFoundException((Guid)taskDtoForUpdate.UserId);
@@ -171,7 +194,7 @@ namespace Services.Services
 
             if (taskDtoForUpdate.ColumnId != Guid.Empty)
             {
-                var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync((Guid)taskDtoForUpdate.ColumnId, cancellationToken);
+                var column = await _columnRepository.GetColumnByIdAsync((Guid)taskDtoForUpdate.ColumnId, cancellationToken);
                 if (column == null)
                 {
                     throw new ColumnNotFoundException((Guid)taskDtoForUpdate.ColumnId);
@@ -180,12 +203,12 @@ namespace Services.Services
 
             _mapper.Map(taskDtoForUpdate, task);
             if (taskDtoForUpdate.DateEnd != null) { task.DateEnd = DateTime.SpecifyKind((DateTime)taskDtoForUpdate.DateEnd, DateTimeKind.Utc); }
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<string> GetResponseByChatBot(Guid taskId, string userMessage, CancellationToken cancellationToken = default)
         {
-            var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync((Guid)taskId, cancellationToken);
+            var task = await _taskRepository.GetTaskByIdAsync((Guid)taskId, cancellationToken);
             if (task == null)
             {
                 throw new TaskNotFoundException(taskId);
@@ -202,8 +225,8 @@ namespace Services.Services
 
             if (task.ContextMessages == null || task.ContextMessages.Count == 0)
             {
-                var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(task.ColumnId, cancellationToken);
-                var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(column.ProjectId, cancellationToken);
+                var column = await _columnRepository.GetColumnByIdAsync(task.ColumnId, cancellationToken);
+                var project = await _projectRepository.GetProjectByIdAsync(column.ProjectId, cancellationToken);
 
                 string taskInfo = $"Название проекта: {project.Name} " +
                     $"\n Название задачи, которую нужно решить: {task.Title} " +
@@ -223,7 +246,7 @@ namespace Services.Services
                     new Message { Sender = "user", Text = taskInfo, Timestamp = DateTime.UtcNow },
                     new Message { Sender = "bot", Text = stringResponse, Timestamp = DateTime.UtcNow }
                 };
-                await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return stringResponse;
             }
@@ -244,26 +267,26 @@ namespace Services.Services
             task.ContextMessages.Add(userMessage);
             task.Conversation.Add(new Message { Sender = "user", Text = userMessage, Timestamp = DateTime.UtcNow });
             task.Conversation.Add(new Message { Sender = "bot", Text = stringResponseBig, Timestamp = DateTime.UtcNow });
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return stringResponseBig;
         }
 
         public async Task<List<MessageDto>> GetConversation(Guid taskId, CancellationToken cancellationToken = default)
         {
-            var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
+            var task = await _taskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
             {
                 throw new TaskNotFoundException(taskId);
             }
 
-            var conversation = await _repositoryManager.MessageRepository.GetAllMessagesForTaskAsync(taskId, cancellationToken);
+            var conversation = await _messageRepository.GetAllMessagesForTaskAsync(taskId, cancellationToken);
             return _mapper.Map<List<MessageDto>>(conversation);
         }
 
         public async Task<List<string>> GetTaskChatBotContext(Guid taskId, CancellationToken cancellationToken = default)
         {
-            var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
+            var task = await _taskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
             {
                 throw new TaskNotFoundException(taskId);
@@ -279,7 +302,7 @@ namespace Services.Services
 
         public async Task DeleteTaskChatBotContext(Guid taskId, CancellationToken cancellationToken = default)
         {
-            var task = await _repositoryManager.TaskRepository.GetTaskByIdAsync(taskId, cancellationToken);
+            var task = await _taskRepository.GetTaskByIdAsync(taskId, cancellationToken);
             if (task == null)
             {
                 throw new TaskNotFoundException(taskId);
@@ -287,7 +310,7 @@ namespace Services.Services
             
             task.ContextMessages = null;
             task.Conversation = null;
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

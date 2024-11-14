@@ -18,14 +18,18 @@ namespace Services.Services
 {
     public class UserService : IUserService
     {
-        private readonly IRepositoryManager _repositoryManager;
+        private readonly IUserRepository _userRepository;
+        private readonly ISpecializationRepository _specializationRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IValidatorManager _validatorManager;
 
-        public UserService(IRepositoryManager repositoryManager, IMapper mapper, IConfiguration configuration, IValidatorManager validatorManager)
+        public UserService(IUserRepository userRepository, ISpecializationRepository specializationRepository, IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IValidatorManager validatorManager)
         {
-            _repositoryManager = repositoryManager;
+            _userRepository = userRepository;
+            _specializationRepository = specializationRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _configuration = configuration;
             _validatorManager = validatorManager;
@@ -35,7 +39,7 @@ namespace Services.Services
         {
             await _validatorManager.ValidateAsync(userDtoForCreate, cancellationToken);
 
-            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(userDtoForCreate.SpecializationId, cancellationToken);
+            var specialization = await _specializationRepository.GetSpecializationByIdAsync(userDtoForCreate.SpecializationId, cancellationToken);
             if (specialization == null)
             {
                 throw new SpecializationNotFoundException(userDtoForCreate.SpecializationId);
@@ -47,31 +51,31 @@ namespace Services.Services
             user.Password = PasswordHasher.HashPassword(userDtoForCreate.Password, out salt);
             user.PasswordSalt = salt;
 
-            _repositoryManager.UserRepository.Insert(user);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _userRepository.Insert(user);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<UserDto>(user);
         }
 
         public async System.Threading.Tasks.Task DeleteAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            var user = await _userRepository.GetUserByIdAsync(userId, cancellationToken);
             if (user == null)
             {
                 throw new UserNotFoundException(userId);
             }
-            _repositoryManager.UserRepository.Remove(user);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _userRepository.Remove(user);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<List<UserDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var users = await _repositoryManager.UserRepository.GetAllUsersAsync(cancellationToken);
+            var users = await _userRepository.GetAllUsersAsync(cancellationToken);
             return _mapper.Map<List<UserDto>>(users);
         }
 
         public async Task<UserDto> GetUserByEmail(string email, CancellationToken cancellationToken = default)
         {
-            var user = await _repositoryManager.UserRepository.GetUserByEmailAsync(email, cancellationToken);
+            var user = await _userRepository.GetUserByEmailAsync(email, cancellationToken);
             if (user == null)
             {
                 throw new UserNotFoundEmailException(email);
@@ -81,7 +85,7 @@ namespace Services.Services
 
         public async Task<UserDto> GetUserById(Guid userId, CancellationToken cancellationToken = default)
         {
-            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            var user = await _userRepository.GetUserByIdAsync(userId, cancellationToken);
             if (user == null)
             {
                 throw new UserNotFoundException(userId);
@@ -93,13 +97,13 @@ namespace Services.Services
         {
             await _validatorManager.ValidateAsync(userDtoForUpdate, cancellationToken);
 
-            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(userId, cancellationToken);
+            var user = await _userRepository.GetUserByIdAsync(userId, cancellationToken);
             if (user == null)
             {
                 throw new UserNotFoundException(userId);
             }
 
-            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync((Guid)userDtoForUpdate.SpecializationId, cancellationToken);
+            var specialization = await _specializationRepository.GetSpecializationByIdAsync((Guid)userDtoForUpdate.SpecializationId, cancellationToken);
             if (specialization == null)
             {
                 throw new SpecializationNotFoundException((Guid)userDtoForUpdate.SpecializationId);
@@ -115,12 +119,12 @@ namespace Services.Services
                 user.PasswordSalt = salt; 
             }
 
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<UserDto> ValidateUserCredentials(string email, string password, CancellationToken cancellationToken = default)
         {
-            var user = await _repositoryManager.UserRepository.GetUserByEmailAsync(email, cancellationToken);
+            var user = await _userRepository.GetUserByEmailAsync(email, cancellationToken);
             if (user == null)
             {
                 throw new UserNotFoundEmailException(email);
@@ -158,11 +162,11 @@ namespace Services.Services
 
         public async System.Threading.Tasks.Task SeedAdminUserAsync(CancellationToken cancellationToken = default)
         {
-            var adminUser = await _repositoryManager.UserRepository.GetUserByEmailAsync("admin@admin", cancellationToken);
+            var adminUser = await _userRepository.GetUserByEmailAsync("admin@admin", cancellationToken);
 
             if (adminUser == null)
             {
-                var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByNameAsync("adminSpecialization", cancellationToken);
+                var specialization = await _specializationRepository.GetSpecializationByNameAsync("adminSpecialization", cancellationToken);
                 if (specialization == null)
                 {
                     throw new Exception();

@@ -19,13 +19,17 @@ namespace Services.Services
 {
     public class ColumnService : IColumnService
     {
-        private readonly IRepositoryManager _repositoryManager;
+        private readonly IColumnRepository _columnRepository;
+        private readonly IProjectRepository _projectRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidatorManager _validatorManager;
 
-        public ColumnService(IRepositoryManager repositoryManager, IMapper mapper, IValidatorManager validatorManager)
+        public ColumnService(IColumnRepository columnRepository, IProjectRepository projectRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidatorManager validatorManager)
         {
-            _repositoryManager = repositoryManager;
+            _columnRepository = columnRepository;
+            _projectRepository = projectRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validatorManager = validatorManager;
         }
@@ -34,7 +38,7 @@ namespace Services.Services
         {
             await _validatorManager.ValidateAsync(columnDtoForCreate, cancellationToken);
 
-            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(columnDtoForCreate.ProjectId, cancellationToken);
+            var project = await _projectRepository.GetProjectByIdAsync(columnDtoForCreate.ProjectId, cancellationToken);
             if (project == null)
             {
                 throw new ProjectNotFoundException(columnDtoForCreate.ProjectId);
@@ -46,14 +50,14 @@ namespace Services.Services
 
             var column = _mapper.Map<Column>(columnDtoForCreate);
 
-            _repositoryManager.ColumnRepository.Insert(column);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _columnRepository.Insert(column);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<ColumnDto>(column);
         }
 
         public async System.Threading.Tasks.Task DeleteAsync(Guid projectId, Guid columnId, CancellationToken cancellationToken = default)
         {
-            var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(columnId, cancellationToken);
+            var column = await _columnRepository.GetColumnByIdAsync(columnId, cancellationToken);
             if (column == null)
             {
                 throw new ColumnNotFoundException(columnId);
@@ -62,25 +66,25 @@ namespace Services.Services
             {
                 throw new ColumnCreatingErrorWithProjectDependency(projectId, column.ProjectId);
             }
-            _repositoryManager.ColumnRepository.Remove(column);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _columnRepository.Remove(column);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<List<ColumnDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var columns = await _repositoryManager.ColumnRepository.GetAllColumnsAsync(cancellationToken);
+            var columns = await _columnRepository.GetAllColumnsAsync(cancellationToken);
             return _mapper.Map<List<ColumnDto>>(columns);
         }
 
         public async Task<List<ColumnDto>> GetAllColumnsForProjectAsync(Guid projectId, CancellationToken cancellationToken = default)
         {
-            var columns = await _repositoryManager.ColumnRepository.GetAllColumnsForProjectAsync(projectId, cancellationToken);
+            var columns = await _columnRepository.GetAllColumnsForProjectAsync(projectId, cancellationToken);
             return _mapper.Map<List<ColumnDto>>(columns);
         }
 
         public async Task<ColumnDto> GetColumnById(Guid columnId, CancellationToken cancellationToken = default)
         {
-            var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(columnId, cancellationToken);
+            var column = await _columnRepository.GetColumnByIdAsync(columnId, cancellationToken);
             if (column == null)
             {
                 throw new ColumnNotFoundException(columnId);
@@ -92,14 +96,14 @@ namespace Services.Services
         {
             await _validatorManager.ValidateAsync(columnDtoForUpdate, cancellationToken);
 
-            var column = await _repositoryManager.ColumnRepository.GetColumnByIdAsync(columnId, cancellationToken);
+            var column = await _columnRepository.GetColumnByIdAsync(columnId, cancellationToken);
             if (column == null)
             {
                 throw new ColumnNotFoundException(columnId);
             }
 
             _mapper.Map(columnDtoForUpdate, column);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

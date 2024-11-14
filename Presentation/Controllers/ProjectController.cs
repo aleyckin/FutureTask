@@ -13,24 +13,27 @@ namespace Presentation.Controllers
     [Route("api/projects")]
     public class ProjectController : ControllerBase
     {
-        private readonly IServiceManager _serviceManager;
-        public ProjectController(IServiceManager serviceManager)
+        private readonly IProjectService _projectService;
+        private readonly IProjectUsersService _projectUsersService;
+
+        public ProjectController(IProjectService projectService, IProjectUsersService projectUsersService)
         {
-            _serviceManager = serviceManager;
+            _projectService = projectService;
+            _projectUsersService = projectUsersService;
         }
 
         [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetProjects(CancellationToken cancellationToken)
         {
-            var projects = await _serviceManager.ProjectService.GetAllAsync(cancellationToken);
+            var projects = await _projectService.GetAllAsync(cancellationToken);
             return Ok(projects);
         }
 
         [HttpGet("{projectId:guid}")]
         public async Task<IActionResult> GetProjectById(Guid projectId, CancellationToken cancellationToken)
         {
-            var projectDto = await _serviceManager.ProjectService.GetProjectById(projectId, cancellationToken);
+            var projectDto = await _projectService.GetProjectById(projectId, cancellationToken);
             return Ok(projectDto);
         }
 
@@ -38,7 +41,7 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateProject([FromBody] ProjectDtoForCreate projectDtoForCreate)
         {
-            var projectDto = await _serviceManager.ProjectService.CreateAsync(projectDtoForCreate);
+            var projectDto = await _projectService.CreateAsync(projectDtoForCreate);
             return CreatedAtAction(nameof(GetProjectById), new { projectId = projectDto.Id }, projectDto);
         }
 
@@ -46,7 +49,7 @@ namespace Presentation.Controllers
         [HttpPut("{projectId:guid}")]
         public async Task<IActionResult> UpdateProject(Guid projectId, [FromBody] ProjectDtoForUpdate projectDtoForUpdate, CancellationToken cancellationToken)
         {
-            await _serviceManager.ProjectService.UpdateAsync(projectId, projectDtoForUpdate, cancellationToken);
+            await _projectService.UpdateAsync(projectId, projectDtoForUpdate, cancellationToken);
             return NoContent();
         }
 
@@ -54,14 +57,14 @@ namespace Presentation.Controllers
         [HttpDelete("{projectId:guid}")]
         public async Task<IActionResult> DeleteProject(Guid projectId, CancellationToken cancellationToken)
         {
-            await _serviceManager.ProjectService.DeleteAsync(projectId, cancellationToken);
+            await _projectService.DeleteAsync(projectId, cancellationToken);
             return NoContent();
         }
 
         [HttpGet("projectUsers/{projectId:guid}/users")]
         public async Task<IActionResult> GetAllUsersForProject(Guid projectId, CancellationToken cancellationToken)
         {
-            var users = await _serviceManager.ProjectUsersService.GetAllUsersByProject(projectId, cancellationToken);
+            var users = await _projectUsersService.GetAllUsersByProject(projectId, cancellationToken);
 
             return Ok(users);
         }
@@ -70,7 +73,7 @@ namespace Presentation.Controllers
         [HttpPost("projectUsers/addUserToProject:{projectId:guid}")]
         public async Task<IActionResult> AddUserToProject(Guid projectId,[FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
         {
-            await _serviceManager.ProjectUsersService.AddUserToProjectAsync(projectUsersDto, cancellationToken);
+            await _projectUsersService.AddUserToProjectAsync(projectUsersDto, cancellationToken);
             return NoContent();
         }
 
@@ -78,7 +81,7 @@ namespace Presentation.Controllers
         [HttpPost("projectUsers/addUserToProjectAsAdmin")]
         public async Task<IActionResult> AddUserToProjectAsAdmin([FromBody] ProjectUsersDto projectUsersDto, CancellationToken cancellationToken)
         {
-            await _serviceManager.ProjectUsersService.AddUserToProjectAsync(projectUsersDto, cancellationToken);
+            await _projectUsersService.AddUserToProjectAsync(projectUsersDto, cancellationToken);
             return NoContent();
         }
 
@@ -86,7 +89,7 @@ namespace Presentation.Controllers
         [HttpDelete("projectUsers/deleteUserFromProject:{projectId:guid}")]
         public async Task<IActionResult> DeleteUserFromProject(Guid userId, Guid projectId, CancellationToken cancellationToken)
         {
-            await _serviceManager.ProjectUsersService.DeleteUserFromProjectAsync(userId, projectId, cancellationToken);
+            await _projectUsersService.DeleteUserFromProjectAsync(userId, projectId, cancellationToken);
             return NoContent();
         }
 
@@ -94,7 +97,7 @@ namespace Presentation.Controllers
         [HttpDelete("projectUsers/deleteUserFromProjectAsAdmin/{userId:guid}/{projectId:guid}")]
         public async Task<IActionResult> DeleteUserFromProjectAsAdmin(Guid userId, Guid projectId, CancellationToken cancellationToken)
         {
-            await _serviceManager.ProjectUsersService.DeleteUserFromProjectAsync(userId, projectId, cancellationToken);
+            await _projectUsersService.DeleteUserFromProjectAsync(userId, projectId, cancellationToken);
             return NoContent();
         }
     }

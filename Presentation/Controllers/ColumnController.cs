@@ -16,24 +16,24 @@ namespace Presentation.Controllers
     [Route("api/columns")]
     public class ColumnController : ControllerBase
     {
-        private readonly IServiceManager _serviceManager;
-        public ColumnController(IServiceManager serviceManager)
+        private readonly IColumnService _columnService;
+        public ColumnController(IColumnService columnService)
         {
-            _serviceManager = serviceManager;
+            _columnService = columnService;
         }
 
         [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetColumns(CancellationToken cancellationToken)
         {
-            var columns = await _serviceManager.ColumnService.GetAllAsync(cancellationToken);
+            var columns = await _columnService.GetAllAsync(cancellationToken);
             return Ok(columns);
         }
 
         [HttpGet("forProject/{projectId:guid}")]
         public async Task<IActionResult> GetColumnsForProject(Guid projectId, CancellationToken cancellationToken)
         {
-            var columns = await _serviceManager.ColumnService.GetAllColumnsForProjectAsync(projectId, cancellationToken);
+            var columns = await _columnService.GetAllColumnsForProjectAsync(projectId, cancellationToken);
             return Ok(columns);
         }
 
@@ -41,7 +41,7 @@ namespace Presentation.Controllers
         [HttpGet("{columnId:guid}")]
         public async Task<IActionResult> GetColumnById(Guid columnId, CancellationToken cancellationToken)
         {
-            var columnDto = await _serviceManager.ColumnService.GetColumnById(columnId, cancellationToken);
+            var columnDto = await _columnService.GetColumnById(columnId, cancellationToken);
             return Ok(columnDto);
         }
 
@@ -49,7 +49,7 @@ namespace Presentation.Controllers
         [HttpPost("{projectId:guid}")]
         public async Task<IActionResult> CreateColumn(Guid projectId, [FromBody] ColumnDtoForCreate columnDtoForCreate)
         {
-            var columnDto = await _serviceManager.ColumnService.CreateAsync(projectId, columnDtoForCreate);
+            var columnDto = await _columnService.CreateAsync(projectId, columnDtoForCreate);
             return CreatedAtAction(nameof(GetColumnById), new { columnId = columnDto.Id }, columnDto);
         }
 
@@ -57,7 +57,7 @@ namespace Presentation.Controllers
         [HttpPut("{columnId:guid}")]
         public async Task<IActionResult> UpdateColumn(Guid columnId, [FromBody] ColumnDtoForUpdate columnDtoForUpdate, CancellationToken cancellationToken)
         {
-            await _serviceManager.ColumnService.UpdateAsync(columnId, columnDtoForUpdate, cancellationToken);
+            await _columnService.UpdateAsync(columnId, columnDtoForUpdate, cancellationToken);
             return NoContent();
         }
 
@@ -65,7 +65,7 @@ namespace Presentation.Controllers
         [HttpDelete("{projectId:guid}/{columnId:guid}")]
         public async Task<IActionResult> DeleteColumn(Guid projectId, Guid columnId, CancellationToken cancellationToken)
         {
-            await _serviceManager.ColumnService.DeleteAsync(projectId, columnId, cancellationToken);
+            await _columnService.DeleteAsync(projectId, columnId, cancellationToken);
             return NoContent();
         }
     }

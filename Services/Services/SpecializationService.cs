@@ -16,13 +16,15 @@ namespace Services.Services
 {
     public class SpecializationService : ISpecializationService
     {
-        private readonly IRepositoryManager _repositoryManager;
+        private readonly ISpecializationRepository _specializationRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidatorManager _validatorManager;
 
-        public SpecializationService(IRepositoryManager repositoryManager, IMapper mapper, IValidatorManager validatorManager)
+        public SpecializationService(ISpecializationRepository specializationRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidatorManager validatorManager)
         {
-            _repositoryManager = repositoryManager;
+            _specializationRepository = specializationRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validatorManager = validatorManager;
         }
@@ -32,31 +34,31 @@ namespace Services.Services
             await _validatorManager.ValidateAsync(specializationDtoForCreate, cancellationToken);
 
             var specialization = _mapper.Map<Specialization>(specializationDtoForCreate);
-            _repositoryManager.SpecializationRepository.Insert(specialization);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _specializationRepository.Insert(specialization);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<SpecializationDto>(specialization);
         }
 
         public async System.Threading.Tasks.Task DeleteAsync(Guid specializationId, CancellationToken cancellationToken = default)
         {
-            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
+            var specialization = await _specializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
             if (specialization == null)
             {
                 throw new SpecializationNotFoundException(specializationId);
             }
-            _repositoryManager.SpecializationRepository.Remove(specialization);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _specializationRepository.Remove(specialization);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<List<SpecializationDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var specializations = await _repositoryManager.SpecializationRepository.GetAllSpecializationsAsync(cancellationToken);
+            var specializations = await _specializationRepository.GetAllSpecializationsAsync(cancellationToken);
             return _mapper.Map<List<SpecializationDto>>(specializations);
         }
 
         public async Task<SpecializationDto> GetSpecializationById(Guid specializationId, CancellationToken cancellationToken = default)
         {
-            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
+            var specialization = await _specializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
             if (specialization == null)
             {
                 throw new SpecializationNotFoundException(specializationId);
@@ -68,19 +70,19 @@ namespace Services.Services
         {
             await _validatorManager.ValidateAsync(specializationDtoForUpdate, cancellationToken);
 
-            var specialization = await _repositoryManager.SpecializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
+            var specialization = await _specializationRepository.GetSpecializationByIdAsync(specializationId, cancellationToken);
             if (specialization == null)
             {
                 throw new SpecializationNotFoundException(specializationId);
             }
 
             _mapper.Map(specializationDtoForUpdate, specialization);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async System.Threading.Tasks.Task SeedSpecializationUserAsync(CancellationToken cancellationToken = default)
         {
-            var adminSpecialization = await _repositoryManager.SpecializationRepository.GetSpecializationByNameAsync("adminSpecialization", cancellationToken);
+            var adminSpecialization = await _specializationRepository.GetSpecializationByNameAsync("adminSpecialization", cancellationToken);
 
             if (adminSpecialization == null)
             {

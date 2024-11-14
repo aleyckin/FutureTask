@@ -15,18 +15,20 @@ namespace Presentation.Controllers
     [Route("api/users")]
     public class UserController : ControllerBase
     {
-        private readonly IServiceManager _serviceManager;
+        private readonly IUserService _userService;
+        private readonly IProjectUsersService _projectUsersService;
 
-        public UserController(IServiceManager serviceManager)
+        public UserController(IUserService userService, IProjectUsersService projectUsersService)
         {
-            _serviceManager = serviceManager;
+            _userService = userService;
+            _projectUsersService = projectUsersService;
         }
 
         [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
         {
-            var users = await _serviceManager.UserService.GetAllAsync(cancellationToken);
+            var users = await _userService.GetAllAsync(cancellationToken);
             return Ok(users);
         }
 
@@ -34,7 +36,7 @@ namespace Presentation.Controllers
         [HttpGet("{userId:guid}")]
         public async Task<IActionResult> GetUserById(Guid userId, CancellationToken cancellationToken)
         {
-            var userDto = await _serviceManager.UserService.GetUserById(userId, cancellationToken);
+            var userDto = await _userService.GetUserById(userId, cancellationToken);
             return Ok(userDto);
         }
 
@@ -42,7 +44,7 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserDtoForCreate userDtoForCreate)
         {
-            var userDto = await _serviceManager.UserService.CreateAsync(userDtoForCreate);
+            var userDto = await _userService.CreateAsync(userDtoForCreate);
             return CreatedAtAction(nameof(GetUserById), new { userId = userDto.Id }, userDto);
         }
 
@@ -50,7 +52,7 @@ namespace Presentation.Controllers
         [HttpPut("{userId:guid}")]
         public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UserDtoForUpdate userDtoForUpdate, CancellationToken cancellationToken)
         {
-            await _serviceManager.UserService.UpdateAsync(userId, userDtoForUpdate, cancellationToken);
+            await _userService.UpdateAsync(userId, userDtoForUpdate, cancellationToken);
             return NoContent();
         }
 
@@ -58,7 +60,7 @@ namespace Presentation.Controllers
         [HttpDelete("{userId:guid}")]
         public async Task<IActionResult> DeleteUser(Guid userId, CancellationToken cancellationToken)
         {
-            await _serviceManager.UserService.DeleteAsync(userId, cancellationToken);
+            await _userService.DeleteAsync(userId, cancellationToken);
             return NoContent();
         }
 
@@ -66,7 +68,7 @@ namespace Presentation.Controllers
         [HttpGet("projectUsers/projectsFor:{userId:guid}")]
         public async Task<IActionResult> GetAllProjectsForUser(Guid userId, CancellationToken cancellationToken)
         {
-            var projects = await _serviceManager.ProjectUsersService.GetAllProjectsByUser(userId, cancellationToken);
+            var projects = await _projectUsersService.GetAllProjectsByUser(userId, cancellationToken);
 
             return Ok(projects);
         }
@@ -81,7 +83,7 @@ namespace Presentation.Controllers
                 return Unauthorized();
             }
             var userId = new Guid(userIdClaim);
-            var projects = await _serviceManager.ProjectUsersService.GetAllProjectsByUser(userId, cancellationToken);
+            var projects = await _projectUsersService.GetAllProjectsByUser(userId, cancellationToken);
 
             return Ok(projects);
         }
@@ -89,13 +91,13 @@ namespace Presentation.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto, CancellationToken cancellationToken)
         {
-            var userDto = await _serviceManager.UserService.ValidateUserCredentials(loginDto.Email, loginDto.Password, cancellationToken);
+            var userDto = await _userService.ValidateUserCredentials(loginDto.Email, loginDto.Password, cancellationToken);
             if (userDto == null)
             {
                 return Unauthorized("Invalid email or password");
             }
 
-            var token = _serviceManager.UserService.GenerateJwtToken(userDto);
+            var token = _userService.GenerateJwtToken(userDto);
 
             return Ok(new { token, user = userDto });
         }

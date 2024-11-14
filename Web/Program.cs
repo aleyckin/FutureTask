@@ -3,21 +3,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
-using Presentation.Controllers;
 using Services.Abstractions;
-using Services.Profiles;
-using Services.Services;
 using System.Text;
 using Microsoft.OpenApi.Models;
-using Domain.Entities.Enums;
 using Web.Middlewares;
-using Persistence.Repositories;
 using Persistance;
 using Web;
 using Services.Validators;
 using FluentValidation.AspNetCore;
 using Services.Validators.TaskValidators;
 using LikhodedDynamics.Sber.GigaChatSDK;
+using Services;
+using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,16 +64,13 @@ builder.Services.AddSwaggerGen(c =>
         { new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer"} }, new string[] { } }
     });
 });
-builder.Services.AddScoped<IServiceManager, ServiceManager>();
-builder.Services.AddScoped<IValidatorManager, ValidatorManager>();
-builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
+
+builder.Services.AddServiceDependencies();
+builder.Services.AddRepositoryDependencies();
 builder.Services.AddDbContextPool<RepositoryDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
 });
-builder.Services.AddAutoMapper(typeof(Services.AssemblyReference));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -135,9 +129,10 @@ app.Run();
 static async Task SeedDataAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
 {
     using var scope = serviceProvider.CreateScope();
-    var serviceManager = scope.ServiceProvider.GetRequiredService<IServiceManager>();
+    var specializationService = scope.ServiceProvider.GetRequiredService<ISpecializationService>();
+    var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
     // Инициализация специализации и администратора
-    await serviceManager.SpecializationService.SeedSpecializationUserAsync(cancellationToken);
-    await serviceManager.UserService.SeedAdminUserAsync(cancellationToken);
+    await specializationService.SeedSpecializationUserAsync(cancellationToken);
+    await userService.SeedAdminUserAsync(cancellationToken);
 }

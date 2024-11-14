@@ -23,7 +23,8 @@ namespace Services.Validators.TaskValidators
                 .IsInEnum().WithMessage("Priority must be 'Low', 'Medium' or 'High'.");
 
             RuleFor(task => task.DateEnd)
-                .NotEmpty().WithMessage("DateEnd is required.");
+                .NotEmpty().WithMessage("DateEnd is required.")
+                .GreaterThan(DateTime.UtcNow).WithMessage("End date must be in the future.");
 
             RuleFor(task => task.ColumnId)
                 .NotEmpty().WithMessage("ColumnId is required.");

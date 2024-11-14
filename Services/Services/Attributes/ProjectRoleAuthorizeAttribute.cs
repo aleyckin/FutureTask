@@ -41,8 +41,8 @@ namespace Services.Services.Attributes
                 return;
             }
 
-            var serviceManager = context.HttpContext.RequestServices.GetRequiredService<IServiceManager>();
-            var roleOnProject = serviceManager.ProjectUsersService.GetUserRoleOnProject(new Guid(userId), new Guid(projectId)).Result;
+            var projectUserService = context.HttpContext.RequestServices.GetRequiredService<IProjectUsersService>();
+            var roleOnProject = projectUserService.GetUserRoleOnProject(new Guid(userId), new Guid(projectId)).Result;
 
             if (roleOnProject != _roleOnProject)
             {

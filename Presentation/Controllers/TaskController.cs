@@ -17,17 +17,17 @@ namespace Presentation.Controllers
     [Route("api/tasks")]
     public class TaskController : ControllerBase
     {
-        private readonly IServiceManager _serviceManager;
-        public TaskController(IServiceManager serviceManager)
+        private readonly ITaskService _taskService;
+        public TaskController(ITaskService taskService)
         {
-            _serviceManager = serviceManager;
+            _taskService = taskService;
         }
 
         [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetTasks(CancellationToken cancellationToken)
         {
-            var tasks = await _serviceManager.TaskService.GetAllAsync(cancellationToken);
+            var tasks = await _taskService.GetAllAsync(cancellationToken);
             return Ok(tasks);
         }
 
@@ -40,14 +40,14 @@ namespace Presentation.Controllers
                 return Unauthorized();
             }
             var userId = new Guid(userIdClaim);
-            var tasks = await _serviceManager.TaskService.GetAllTasksForUserAsync(userId, cancellationToken);
+            var tasks = await _taskService.GetAllTasksForUserAsync(userId, cancellationToken);
             return Ok(tasks);
         }
 
         [HttpGet("allTasksInColumn/{columnId:guid}")]
         public async Task<IActionResult> GetAllTasksInColumn(Guid columnId, CancellationToken cancellationToken)
         {
-            var tasks = await _serviceManager.TaskService.GetAllTasksInColumnAsync(columnId, cancellationToken);
+            var tasks = await _taskService.GetAllTasksInColumnAsync(columnId, cancellationToken);
             return Ok(tasks);
         }
 
@@ -60,29 +60,28 @@ namespace Presentation.Controllers
                 return Unauthorized();
             }
             var userId = new Guid(userIdClaim);
-            var tasks = await _serviceManager.TaskService.GetAllTasksForUserInColumnAsync(userId, columnId, cancellationToken);
+            var tasks = await _taskService.GetAllTasksForUserInColumnAsync(userId, columnId, cancellationToken);
             return Ok(tasks);
         }
 
         [HttpGet("{taskId:guid}")]
-        public async Task<IActionResult> GetTaskById(Guid taskId, CancellationToken cancellationToken)
+        public async Task<ActionResult<TaskDto>> GetTaskById(Guid taskId, CancellationToken cancellationToken)
         {
-            var taskDto = await _serviceManager.TaskService.GetTaskById(taskId, cancellationToken);
-            return Ok(taskDto);
+            return await _taskService.GetTaskById(taskId, cancellationToken);
         }
 
         [HttpPost("{projectId:guid}")]
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
         public async Task<IActionResult> CreateTask(Guid projectId, [FromBody] TaskDtoForCreate taskDtoForCreate, CancellationToken cancellationToken)
         {
-            var taskDto = await _serviceManager.TaskService.CreateAsync(projectId, taskDtoForCreate, cancellationToken);
+            var taskDto = await _taskService.CreateAsync(projectId, taskDtoForCreate, cancellationToken);
             return CreatedAtAction(nameof(GetTaskById), new { taskId = taskDto.Id }, taskDto);
         }
 
         [HttpPut("{taskId:guid}")]
         public async Task<IActionResult> UpdateTask(Guid taskId, [FromBody] TaskDtoForUpdate taskDtoForUpdate, CancellationToken cancellationToken)
         {
-            await _serviceManager.TaskService.UpdateAsync(taskId, taskDtoForUpdate, cancellationToken);
+            await _taskService.UpdateAsync(taskId, taskDtoForUpdate, cancellationToken);
             return NoContent();
         }
 
@@ -90,35 +89,35 @@ namespace Presentation.Controllers
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]
         public async Task<IActionResult> DeleteTask(Guid taskId, Guid projectId, CancellationToken cancellationToken)
         {
-            await _serviceManager.TaskService.DeleteAsync(projectId, taskId, cancellationToken);
+            await _taskService.DeleteAsync(projectId, taskId, cancellationToken);
             return NoContent();
         }
 
         [HttpPost("{taskId:guid}/chatBot")]
         public async Task<IActionResult> GetChatBotResponse(Guid taskId, [FromBody] string userMessage, CancellationToken cancellationToken)
         {
-            var response = await _serviceManager.TaskService.GetResponseByChatBot(taskId, userMessage, cancellationToken);
+            var response = await _taskService.GetResponseByChatBot(taskId, userMessage, cancellationToken);
             return Ok(new { responseMessage = response });
         }
 
         [HttpGet("{taskId:guid}/chatBot")]
         public async Task<IActionResult> GetTaskChatBotContext(Guid taskId, CancellationToken cancellationToken)
         {
-            var response = await _serviceManager.TaskService.GetTaskChatBotContext(taskId, cancellationToken);
+            var response = await _taskService.GetTaskChatBotContext(taskId, cancellationToken);
             return Ok(new { responseMessage = response });
         }
 
         [HttpGet("{taskId:guid}/chatBot/conversation")]
         public async Task<IActionResult> GetConversation(Guid taskId, CancellationToken cancellationToken)
         {
-            var response = await _serviceManager.TaskService.GetConversation(taskId, cancellationToken);
+            var response = await _taskService.GetConversation(taskId, cancellationToken);
             return Ok(response);
         }
 
         [HttpDelete("{taskId:guid}/chatBot")]
         public async Task<IActionResult> DeleteTaskChatBotContext(Guid taskId, CancellationToken cancellationToken)
         {
-            await _serviceManager.TaskService.DeleteTaskChatBotContext(taskId, cancellationToken);
+            await _taskService.DeleteTaskChatBotContext(taskId, cancellationToken);
             return NoContent();
         }
     }

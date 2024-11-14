@@ -14,6 +14,7 @@ namespace Services.Validators.ProjectValidators
         {
             RuleFor(project => project.Name)
                 .NotEmpty().WithMessage("Name is required.")
+                .MaximumLength(200).WithMessage("Name is longer than 200 chars.")
                 .When(project => project.Name != null);
         }
     }

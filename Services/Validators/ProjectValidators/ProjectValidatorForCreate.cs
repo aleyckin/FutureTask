@@ -13,7 +13,9 @@ namespace Services.Validators.ProjectValidators
         public ProjectValidatorForCreate() 
         {
             RuleFor(project => project.Name)
-                .NotEmpty().WithMessage("Name is required.");
+                .NotEmpty().WithMessage("Name is required.")
+                .MinimumLength(1).WithMessage("Name is shorter than 1 chars.")
+                .MaximumLength(200).WithMessage("Name is longer than 200 chars.");
         }
     }
 }

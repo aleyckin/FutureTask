@@ -15,13 +15,15 @@ namespace Services.Services
 {
     public class ProjectService : IProjectService
     {
-        private readonly IRepositoryManager _repositoryManager;
+        private readonly IProjectRepository _projectRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidatorManager _validatorManager;
 
-        public ProjectService(IRepositoryManager repositoryManager, IMapper mapper, IValidatorManager validatorManager)
+        public ProjectService(IProjectRepository projectRepository, IUnitOfWork unitOfWork, IMapper mapper, IValidatorManager validatorManager)
         {
-            _repositoryManager = repositoryManager;
+            _projectRepository = projectRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validatorManager = validatorManager;
         }
@@ -31,31 +33,31 @@ namespace Services.Services
             await _validatorManager.ValidateAsync(projectDtoForCreate, cancellationToken);
 
             var project = _mapper.Map<Project>(projectDtoForCreate);
-            _repositoryManager.ProjectRepository.Insert(project);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _projectRepository.Insert(project);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<ProjectDto>(project);
         }
 
         public async System.Threading.Tasks.Task DeleteAsync(Guid projectId, CancellationToken cancellationToken = default)
         {
-            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
+            var project = await _projectRepository.GetProjectByIdAsync(projectId, cancellationToken);
             if (project == null)
             {
                 throw new ProjectNotFoundException(projectId);
             }
-            _repositoryManager.ProjectRepository.Remove(project);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _projectRepository.Remove(project);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<List<ProjectDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var projects = await _repositoryManager.ProjectRepository.GetAllProjectsAsync(cancellationToken);
+            var projects = await _projectRepository.GetAllProjectsAsync(cancellationToken);
             return _mapper.Map<List<ProjectDto>>(projects);
         }
 
         public async Task<ProjectDto> GetProjectById(Guid projectId, CancellationToken cancellationToken = default)
         {
-            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
+            var project = await _projectRepository.GetProjectByIdAsync(projectId, cancellationToken);
             if (project == null) 
             {
                 throw new ProjectNotFoundException(projectId);
@@ -67,14 +69,14 @@ namespace Services.Services
         {
             await _validatorManager.ValidateAsync(projectDtoForUpdate, cancellationToken);
 
-            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectId, cancellationToken);
+            var project = await _projectRepository.GetProjectByIdAsync(projectId, cancellationToken);
             if (project == null)
             {
                 throw new ProjectNotFoundException(projectId);
             }
 
             _mapper.Map(projectDtoForUpdate, project);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

@@ -15,44 +15,44 @@ namespace Presentation.Controllers
     [Route("api/specializations")]
     public class SpecializationController : ControllerBase
     {
-        private readonly IServiceManager _serviceManager;
-        public SpecializationController(IServiceManager serviceManager)
+        private readonly ISpecializationService _specializationService;
+        public SpecializationController(ISpecializationService specializationService)
         {
-            _serviceManager = serviceManager;
+            _specializationService = specializationService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetSpecializations(CancellationToken cancellationToken)
         {
-            var specializations = await _serviceManager.SpecializationService.GetAllAsync(cancellationToken);
+            var specializations = await _specializationService.GetAllAsync(cancellationToken);
             return Ok(specializations);
         }
 
         [HttpGet("{specializationId:guid}")]
         public async Task<IActionResult> GetSpecializationById(Guid specializationId, CancellationToken cancellationToken)
         {
-            var specializationDto = await _serviceManager.SpecializationService.GetSpecializationById(specializationId, cancellationToken);
+            var specializationDto = await _specializationService.GetSpecializationById(specializationId, cancellationToken);
             return Ok(specializationDto);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateSpecialization([FromBody] SpecializationDtoForCreate specializationDtoForCreate)
         {
-            var specializationDto = await _serviceManager.SpecializationService.CreateAsync(specializationDtoForCreate);
+            var specializationDto = await _specializationService.CreateAsync(specializationDtoForCreate);
             return CreatedAtAction(nameof(GetSpecializationById), new { specializationId = specializationDto.Id }, specializationDto);
         }
 
         [HttpPut("{specializationId:guid}")]
         public async Task<IActionResult> UpdateSpecialization(Guid specializationId, [FromBody] SpecializationDtoForUpdate specializationDtoForUpdate, CancellationToken cancellationToken)
         {
-            await _serviceManager.SpecializationService.UpdateAsync(specializationId, specializationDtoForUpdate, cancellationToken);
+            await _specializationService.UpdateAsync(specializationId, specializationDtoForUpdate, cancellationToken);
             return NoContent();
         }
 
         [HttpDelete("{specializationId:guid}")]
         public async Task<IActionResult> DeleteSpecialization(Guid specializationId, CancellationToken cancellationToken)
         {
-            await _serviceManager.SpecializationService.DeleteAsync(specializationId, cancellationToken);
+            await _specializationService.DeleteAsync(specializationId, cancellationToken);
             return NoContent();
         }
     }

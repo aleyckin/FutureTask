@@ -19,13 +19,25 @@ namespace Services.Services
 {
     public class ProjectUsersService : IProjectUsersService
     {
-        private readonly IRepositoryManager _repositoryManager;
+        private readonly IProjectUsersRepository _projectUsersRepository;
+        private readonly IProjectRepository _projectRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidatorManager _validatorManager;
 
-        public ProjectUsersService(IRepositoryManager repositoryManager, IMapper mapper, IValidatorManager validatorManager)
+        public ProjectUsersService(
+            IProjectUsersRepository projectUsersRepository,
+            IProjectRepository projectRepository, 
+            IUserRepository userRepository,
+            IUnitOfWork unitOfWork, 
+            IMapper mapper,
+            IValidatorManager validatorManager)
         {
-            _repositoryManager = repositoryManager;
+            _projectUsersRepository = projectUsersRepository;
+            _projectRepository = projectRepository;
+            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validatorManager = validatorManager;
         }
@@ -34,13 +46,13 @@ namespace Services.Services
         {
             await _validatorManager.ValidateAsync(projectUsersDto, cancellationToken);
 
-            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(projectUsersDto.ProjectId, cancellationToken);
+            var project = await _projectRepository.GetProjectByIdAsync(projectUsersDto.ProjectId, cancellationToken);
             if (project == null)
             {
                 throw new ProjectNotFoundException(projectUsersDto.ProjectId);
             }
 
-            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(projectUsersDto.UserId, cancellationToken);
+            var user = await _userRepository.GetUserByIdAsync(projectUsersDto.UserId, cancellationToken);
             if (user == null)
             {
                 throw new UserNotFoundException(projectUsersDto.UserId);
@@ -48,40 +60,40 @@ namespace Services.Services
 
             var projectUser = _mapper.Map<ProjectUsers>(projectUsersDto);
 
-            _repositoryManager.ProjectUsersRepository.Insert(projectUser);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _projectUsersRepository.Insert(projectUser);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async System.Threading.Tasks.Task DeleteUserFromProjectAsync(Guid UserId, Guid ProjectId, CancellationToken cancellationToken = default)
         {
-            var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(UserId, ProjectId, cancellationToken);
+            var projectUser = await _projectUsersRepository.GetProjectUser(UserId, ProjectId, cancellationToken);
             if (projectUser == null)
             {
                 throw new ProjectUsersNotFoundException(UserId, ProjectId);
             }
-            _repositoryManager.ProjectUsersRepository.Remove(projectUser);
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            _projectUsersRepository.Remove(projectUser);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<List<ProjectUsersDtoForListProjects>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default)
         {
-            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(UserId, cancellationToken);
+            var user = await _userRepository.GetUserByIdAsync(UserId, cancellationToken);
             if (user == null) 
             { 
                 throw new UserNotFoundException(UserId);
             }
-            var projects = await _repositoryManager.ProjectUsersRepository.GetAllProjectsByUser(UserId, cancellationToken);
+            var projects = await _projectUsersRepository.GetAllProjectsByUser(UserId, cancellationToken);
             return _mapper.Map<List<ProjectUsersDtoForListProjects>>(projects);
         }
 
         public async Task<List<ProjectUsersDtoForListUsers>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default)
         {
-            var project = await _repositoryManager.ProjectRepository.GetProjectByIdAsync(ProjectId, cancellationToken);
+            var project = await _projectRepository.GetProjectByIdAsync(ProjectId, cancellationToken);
             if (project == null)
             {
                 throw new ProjectNotFoundException(ProjectId);
             }
-            var users = await _repositoryManager.ProjectUsersRepository.GetAllUsersByProject(ProjectId, cancellationToken);
+            var users = await _projectUsersRepository.GetAllUsersByProject(ProjectId, cancellationToken);
             return _mapper.Map<List<ProjectUsersDtoForListUsers>>(users);
         }
 
@@ -89,7 +101,7 @@ namespace Services.Services
         {
             await _validatorManager.ValidateAsync(projectUsersDto, cancellationToken);
 
-            var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(projectUsersDto.UserId, projectUsersDto.ProjectId, cancellationToken);
+            var projectUser = await _projectUsersRepository.GetProjectUser(projectUsersDto.UserId, projectUsersDto.ProjectId, cancellationToken);
             if (projectUser == null)
             {
                 throw new ProjectUsersNotFoundException(projectUsersDto.UserId, projectUsersDto.ProjectId);
@@ -98,12 +110,12 @@ namespace Services.Services
             {
                 projectUser.RoleOnProject = projectUsersDto.RoleOnProject.Value;
             }
-            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<RoleOnProject?> GetUserRoleOnProject(Guid userId, Guid projectId, CancellationToken cancellationToken = default)
         {
-            var projectUser = await _repositoryManager.ProjectUsersRepository.GetProjectUser(userId, projectId, cancellationToken);
+            var projectUser = await _projectUsersRepository.GetProjectUser(userId, projectId, cancellationToken);
             if (projectUser == null)
             {
                 throw new ProjectUsersNotFoundException(userId, projectId);
