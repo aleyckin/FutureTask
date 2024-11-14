@@ -25,14 +25,13 @@ namespace Presentation.Controllers
 
         [Authorize(Roles = "Administrator")]
         [HttpGet]
-        public async Task<IActionResult> GetTasks(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<TaskDto>>> GetTasks(CancellationToken cancellationToken)
         {
-            var tasks = await _taskService.GetAllAsync(cancellationToken);
-            return Ok(tasks);
+            return await _taskService.GetAllAsync(cancellationToken);
         }
 
         [HttpGet("userTasks")]
-        public async Task<IActionResult> GetUserTasks(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<TaskDto>>> GetUserTasks(CancellationToken cancellationToken)
         {
             var userIdClaim = User.FindFirst("userId")?.Value;
             if (userIdClaim == null)
@@ -40,19 +39,17 @@ namespace Presentation.Controllers
                 return Unauthorized();
             }
             var userId = new Guid(userIdClaim);
-            var tasks = await _taskService.GetAllTasksForUserAsync(userId, cancellationToken);
-            return Ok(tasks);
+            return await _taskService.GetAllTasksForUserAsync(userId, cancellationToken);
         }
 
         [HttpGet("allTasksInColumn/{columnId:guid}")]
-        public async Task<IActionResult> GetAllTasksInColumn(Guid columnId, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<TaskDto>>> GetAllTasksInColumn(Guid columnId, CancellationToken cancellationToken)
         {
-            var tasks = await _taskService.GetAllTasksInColumnAsync(columnId, cancellationToken);
-            return Ok(tasks);
+            return await _taskService.GetAllTasksInColumnAsync(columnId, cancellationToken);
         }
 
         [HttpGet("userTasksInColumn/{columnId:guid}")]
-        public async Task<IActionResult> GetAllTasksForUserInColumn(Guid columnId, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<TaskDto>>> GetAllTasksForUserInColumn(Guid columnId, CancellationToken cancellationToken)
         {
             var userIdClaim = User.FindFirst("userId")?.Value;
             if (userIdClaim == null)
@@ -60,8 +57,7 @@ namespace Presentation.Controllers
                 return Unauthorized();
             }
             var userId = new Guid(userIdClaim);
-            var tasks = await _taskService.GetAllTasksForUserInColumnAsync(userId, columnId, cancellationToken);
-            return Ok(tasks);
+            return await _taskService.GetAllTasksForUserInColumnAsync(userId, columnId, cancellationToken);
         }
 
         [HttpGet("{taskId:guid}")]

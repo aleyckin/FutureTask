@@ -1,4 +1,5 @@
-﻿using Contracts.Dtos.UserDtos;
+﻿using Contracts.Dtos.ProjectUsersDtos;
+using Contracts.Dtos.UserDtos;
 using Domain.Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,18 +27,16 @@ namespace Presentation.Controllers
 
         [Authorize(Roles = "Administrator")]
         [HttpGet]
-        public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<UserDto>>> GetUsers(CancellationToken cancellationToken)
         {
-            var users = await _userService.GetAllAsync(cancellationToken);
-            return Ok(users);
+            return await _userService.GetAllAsync(cancellationToken);
         }
 
         [Authorize(Roles = "Administrator")]
         [HttpGet("{userId:guid}")]
-        public async Task<IActionResult> GetUserById(Guid userId, CancellationToken cancellationToken)
+        public async Task<ActionResult<UserDto>> GetUserById(Guid userId, CancellationToken cancellationToken)
         {
-            var userDto = await _userService.GetUserById(userId, cancellationToken);
-            return Ok(userDto);
+            return await _userService.GetUserById(userId, cancellationToken);
         }
 
         [Authorize(Roles = "Administrator")]
@@ -66,16 +65,14 @@ namespace Presentation.Controllers
 
         [Authorize(Roles = "Administrator")]
         [HttpGet("projectUsers/projectsFor:{userId:guid}")]
-        public async Task<IActionResult> GetAllProjectsForUser(Guid userId, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<ProjectUsersDtoForListProjects>>> GetAllProjectsForUser(Guid userId, CancellationToken cancellationToken)
         {
-            var projects = await _projectUsersService.GetAllProjectsByUser(userId, cancellationToken);
-
-            return Ok(projects);
+            return await _projectUsersService.GetAllProjectsByUser(userId, cancellationToken);
         }
 
         [Authorize]
         [HttpGet("projectUsers/projectsForRegularUser")]
-        public async Task<IActionResult> GetAllProjectsForUser(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<ProjectUsersDtoForListProjects>>> GetAllProjectsForUser(CancellationToken cancellationToken)
         {
             var userIdClaim = User.FindFirst("userId")?.Value;
             if (userIdClaim == null)
@@ -83,9 +80,7 @@ namespace Presentation.Controllers
                 return Unauthorized();
             }
             var userId = new Guid(userIdClaim);
-            var projects = await _projectUsersService.GetAllProjectsByUser(userId, cancellationToken);
-
-            return Ok(projects);
+            return await _projectUsersService.GetAllProjectsByUser(userId, cancellationToken);
         }
 
         [HttpPost("login")]

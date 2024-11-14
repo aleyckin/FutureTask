@@ -24,25 +24,22 @@ namespace Presentation.Controllers
 
         [Authorize(Roles = "Administrator")]
         [HttpGet]
-        public async Task<IActionResult> GetColumns(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<ColumnDto>>> GetColumns(CancellationToken cancellationToken)
         {
-            var columns = await _columnService.GetAllAsync(cancellationToken);
-            return Ok(columns);
+            return await _columnService.GetAllAsync(cancellationToken);
         }
 
         [HttpGet("forProject/{projectId:guid}")]
-        public async Task<IActionResult> GetColumnsForProject(Guid projectId, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<ColumnDto>>> GetColumnsForProject(Guid projectId, CancellationToken cancellationToken)
         {
-            var columns = await _columnService.GetAllColumnsForProjectAsync(projectId, cancellationToken);
-            return Ok(columns);
+            return await _columnService.GetAllColumnsForProjectAsync(projectId, cancellationToken);
         }
 
         [Authorize(Roles = "Administrator")]
         [HttpGet("{columnId:guid}")]
-        public async Task<IActionResult> GetColumnById(Guid columnId, CancellationToken cancellationToken)
+        public async Task<ActionResult<ColumnDto>> GetColumnById(Guid columnId, CancellationToken cancellationToken)
         {
-            var columnDto = await _columnService.GetColumnById(columnId, cancellationToken);
-            return Ok(columnDto);
+            return await _columnService.GetColumnById(columnId, cancellationToken);
         }
 
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]

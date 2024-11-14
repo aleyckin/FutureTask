@@ -24,17 +24,15 @@ namespace Presentation.Controllers
 
         [Authorize(Roles = "Administrator")]
         [HttpGet]
-        public async Task<IActionResult> GetProjects(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<ProjectDto>>> GetProjects(CancellationToken cancellationToken)
         {
-            var projects = await _projectService.GetAllAsync(cancellationToken);
-            return Ok(projects);
+            return await _projectService.GetAllAsync(cancellationToken);
         }
 
         [HttpGet("{projectId:guid}")]
-        public async Task<IActionResult> GetProjectById(Guid projectId, CancellationToken cancellationToken)
+        public async Task<ActionResult<ProjectDto>> GetProjectById(Guid projectId, CancellationToken cancellationToken)
         {
-            var projectDto = await _projectService.GetProjectById(projectId, cancellationToken);
-            return Ok(projectDto);
+            return await _projectService.GetProjectById(projectId, cancellationToken);
         }
 
         [Authorize(Roles = "Administrator")]
@@ -62,11 +60,9 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("projectUsers/{projectId:guid}/users")]
-        public async Task<IActionResult> GetAllUsersForProject(Guid projectId, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<ProjectUsersDtoForListUsers>>> GetAllUsersForProject(Guid projectId, CancellationToken cancellationToken)
         {
-            var users = await _projectUsersService.GetAllUsersByProject(projectId, cancellationToken);
-
-            return Ok(users);
+            return await _projectUsersService.GetAllUsersByProject(projectId, cancellationToken);
         }
 
         [ProjectRoleAuthorize(Domain.Entities.Enums.RoleOnProject.TeamLead)]

@@ -22,17 +22,15 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSpecializations(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<SpecializationDto>>> GetSpecializations(CancellationToken cancellationToken)
         {
-            var specializations = await _specializationService.GetAllAsync(cancellationToken);
-            return Ok(specializations);
+            return await _specializationService.GetAllAsync(cancellationToken);
         }
 
         [HttpGet("{specializationId:guid}")]
-        public async Task<IActionResult> GetSpecializationById(Guid specializationId, CancellationToken cancellationToken)
+        public async Task<ActionResult<SpecializationDto>> GetSpecializationById(Guid specializationId, CancellationToken cancellationToken)
         {
-            var specializationDto = await _specializationService.GetSpecializationById(specializationId, cancellationToken);
-            return Ok(specializationDto);
+            return await _specializationService.GetSpecializationById(specializationId, cancellationToken);
         }
 
         [HttpPost]
