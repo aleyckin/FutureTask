@@ -25,10 +25,6 @@ namespace Services.Validators.TaskValidators
                 .IsInEnum().WithMessage("Priority must be 'Low', 'Medium', or 'High'.")
                 .When(task => task.Priority.HasValue);
 
-            RuleFor(task => task.DateEnd)
-                .GreaterThan(DateTime.UtcNow).WithMessage("End date must be in the future.")
-                .When(task => task.DateEnd.HasValue);
-
             RuleFor(task => task.ColumnId)
                 .NotEmpty().WithMessage("ColumnId is required.")
                 .When(task => task.ColumnId.HasValue);

@@ -1,10 +1,12 @@
 ﻿using Contracts.Dtos.ProjectDtos;
 using Contracts.Dtos.ProjectUsersDtos;
+using Domain.Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Services.Attributes;
 using System.Runtime.InteropServices;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -95,6 +97,19 @@ namespace Presentation.Controllers
         {
             await _projectUsersService.DeleteUserFromProjectAsync(userId, projectId, cancellationToken);
             return NoContent();
+        }
+
+        [HttpGet("{projectId:guid}/role")]
+        public async Task<ActionResult<int>> GetUserRoleOnProject(Guid projectId, CancellationToken cancellationToken)
+        {
+            var userIdClaim = User.FindFirst("userId");
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+            Guid userId = Guid.Parse(userIdClaim.Value);
+            var result = (int)await _projectUsersService.GetUserRoleOnProject(userId, projectId, cancellationToken);
+            return result;
         }
     }
 }

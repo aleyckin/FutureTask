@@ -127,7 +127,7 @@ namespace Services.Services
             var user = await _userRepository.GetUserByEmailAsync(email, cancellationToken);
             if (user == null)
             {
-                throw new UserNotFoundEmailException(email);
+                throw new UserCredentialsException();
             }
             bool IsValidPassword = PasswordHasher.VerifyPassword(password, user.Password, user.PasswordSalt);
             if (IsValidPassword)

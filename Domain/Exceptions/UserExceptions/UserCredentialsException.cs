@@ -9,6 +9,6 @@ namespace Domain.Exceptions.UserExceptions
 {
     public sealed class UserCredentialsException : BadCredentialsException
     {
-        public UserCredentialsException() : base("Wrong password.") { }
+        public UserCredentialsException() : base("Wrong user credentials.") { }
     }
 }

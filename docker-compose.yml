@@ -1,5 +1,8 @@
 services:
   web:
+    depends_on:
+      db:
+        condition: service_healthy
     image: ${DOCKER_REGISTRY-}web
     build:
       context: .
@@ -16,6 +19,11 @@ services:
         - POSTGRES_PASSWORD=postgres
     volumes:
         - ./.containers/db-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
         - 5432:5432
   frontend:
