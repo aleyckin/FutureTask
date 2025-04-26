@@ -116,5 +116,12 @@ namespace Presentation.Controllers
             await _taskService.DeleteTaskChatBotContext(taskId, cancellationToken);
             return NoContent();
         }
+
+        [HttpGet("{projectId:guid}/recommendations")]
+        public async Task<ActionResult<ChatbotRecommendationsResponseDto>> GetRecommendations(Guid projectId, string userMessage)
+        {
+            var response = await _taskService.GetResponseRecommendationsByChatBot(projectId, userMessage);
+            return Ok(response);
+        }
     }
 }

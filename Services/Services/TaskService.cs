@@ -2,6 +2,7 @@
 using Contracts.Dtos.MessageDtos;
 using Contracts.Dtos.TaskDtos;
 using Contracts.Dtos.UserDtos;
+using Domain.Entities.Enums;
 using Domain.Entities.Helpers;
 using Domain.Exceptions.ColumnException;
 using Domain.Exceptions.ProjectUsersExceptions;
@@ -16,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Services.Services
@@ -206,6 +208,48 @@ namespace Services.Services
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task<ChatbotRecommendationsResponseDto> GetResponseRecommendationsByChatBot(Guid projectId, string userMessage, CancellationToken cancellationToken = default)
+        {
+            if (_chat.Token == null || _chat.Token.ExpiresAt < ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds())
+            {
+                try
+                {
+                    await _chat.CreateTokenAsync();
+                }
+                catch (Exception) { throw new ChatBotUnavailableException(); }
+            }
+
+            string taskInfo = 
+                "У меня есть название и описание задачи \n" +
+                $"{userMessage} \n" +
+                "В приоритете нужно указать одно из трёх значений - Low, Medium, High, а в количестве дней только цифру. Мне нужен ответ строго в следующем формате без лишних знаков: \n" +
+                "Приоритет: значение \n " +
+                "Количество дней: число";
+
+            string stringResponse;
+            try
+            {
+                var response = await _chat.CompletionsAsync(taskInfo);
+                stringResponse = response.choices.LastOrDefault().message.content;
+            }
+            catch (Exception) { throw new ChatBotUnavailableException(); }
+
+            Match priorityMatch = Regex.Match(stringResponse, @"Приоритет:\s*(Low|Medium|High)", RegexOptions.IgnoreCase);
+            Match daysMatch = Regex.Match(stringResponse, @"Количество\s*дней:\s*(\d+)", RegexOptions.IgnoreCase);
+
+            if (!priorityMatch.Success || !daysMatch.Success)
+            {
+                throw new InvalidOperationException("Невозможно распознать данные из ответа бота.");
+            }
+
+            string priorityString = priorityMatch.Groups[1].Value.Trim();
+            int numberOfDays = int.Parse(daysMatch.Groups[1].Value.Trim());
+
+            Guid userId = await _taskRepository.GetBestUserEmailForTask(projectId);
+
+            return new ChatbotRecommendationsResponseDto(Enum.Parse<Priority>(priorityString), numberOfDays, userId);
+        }
+
         public async Task<string> GetResponseByChatBot(Guid taskId, string userMessage, CancellationToken cancellationToken = default)
         {
             var task = await _taskRepository.GetTaskByIdAsync((Guid)taskId, cancellationToken);
@@ -241,8 +285,8 @@ namespace Services.Services
                 catch (Exception) { throw new ChatBotUnavailableException(); }
 
                 task.ContextMessages = new List<string> { taskInfo };
-                task.Conversation = new List<Message> 
-                { 
+                task.Conversation = new List<Message>
+                {
                     new Message { Sender = "user", Text = taskInfo, Timestamp = DateTime.UtcNow },
                     new Message { Sender = "bot", Text = stringResponse, Timestamp = DateTime.UtcNow }
                 };

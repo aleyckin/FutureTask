@@ -20,6 +20,7 @@ namespace Services.Abstractions
         Task UpdateAsync(Guid taskId, TaskDtoForUpdate taskDtoForUpdate, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid projectId, Guid taskId, CancellationToken cancellationToken = default);
         Task<string> GetResponseByChatBot(Guid taskId, string userMessage, CancellationToken cancellationToken = default);
+        Task<ChatbotRecommendationsResponseDto> GetResponseRecommendationsByChatBot(Guid projectId, string userMessage, CancellationToken cancellationToken = default);
         Task<List<string>> GetTaskChatBotContext(Guid taskId, CancellationToken cancellationToken = default);
         Task DeleteTaskChatBotContext(Guid taskId, CancellationToken cancellationToken = default);
         Task<List<MessageDto>> GetConversation(Guid taskId, CancellationToken cancellationToken = default);

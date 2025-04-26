@@ -14,6 +14,7 @@ namespace Domain.RepositoryInterfaces
         Task<Domain.Entities.Task> GetTaskByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<List<Domain.Entities.Task>> GetAllTasksForUserInColumnAsync(Guid userId, Guid columnId, CancellationToken cancellationToken = default);
         Task<List<Domain.Entities.Task>> GetAllTasksInColumnAsync(Guid columnId, CancellationToken cancellationToken = default);
+        Task<Guid> GetBestUserEmailForTask(Guid projectId);
         void Insert(Domain.Entities.Task task);
         void Remove(Domain.Entities.Task task);
     }

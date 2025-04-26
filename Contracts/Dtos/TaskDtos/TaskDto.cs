@@ -11,4 +11,5 @@ namespace Contracts.Dtos.TaskDtos
     public record TaskDto(Guid Id, string Title, string Description, Priority Priority, DateTime DateCreated, DateTime DateEnd, Guid UserId, Guid ColumnId) { }
     public record TaskDtoForCreate(string Title, string Description, Priority Priority, DateTime DateEnd, Guid UserId, Guid ColumnId) { }
     public record TaskDtoForUpdate(string? Title, string? Description, Priority? Priority, DateTime? DateEnd, Guid UserId, Guid? ColumnId) { }
+    public record ChatbotRecommendationsResponseDto(Priority Priority, int DaysToTask, Guid UserId) { }
 }

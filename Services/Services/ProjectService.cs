@@ -34,6 +34,24 @@ namespace Services.Services
 
             var project = _mapper.Map<Project>(projectDtoForCreate);
             _projectRepository.Insert(project);
+            Column columnForTest = new Column
+            {
+                ProjectId = project.Id,
+                Title = "Готово к тестированию"
+            };
+            Column columnForDevelop = new Column
+            {
+                ProjectId = project.Id,
+                Title = "В разработке"
+            };
+            Column columnForPlanning = new Column
+            {
+                ProjectId = project.Id,
+                Title = "Стадия планирования"
+            };
+            project.Columns.Add(columnForTest);
+            project.Columns.Add(columnForDevelop);
+            project.Columns.Add(columnForPlanning);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<ProjectDto>(project);
         }
