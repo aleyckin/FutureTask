@@ -8,8 +8,8 @@ services:
       context: .
       dockerfile: Web/Dockerfile
     ports:
-      - "5000:5000"
-      - "5001:5001"
+      - "5050:5050"
+      - "5051:5051"
   db:
     image: postgres:latest
     container_name: db
