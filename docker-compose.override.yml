@@ -3,13 +3,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=5050
-      - ASPNETCORE_HTTPS_PORTS=5051
-      - ASPNETCORE_KESTREL__CERTS__DEFAULT__PATH=/root/.aspnet/dev-certs/https/aspnetcore-localhost-C6378A2CACE83E5FE709F97D185FE61FAFFA685D.pfx
-      - ASPNETCORE_KESTREL__CERTS__DEFAULT__PASSWORD=
     ports:
-      - "5050"
-      - "5051"
+      - "5050:5050"
     volumes:
       - ${HOME}/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
-      - ${HOME}/.aspnet/https:/root/.aspnet/https:ro
-      - ./Web/aspnetcore-localhost-C6378A2CACE83E5FE709F97D185FE61FAFFA685D.pfx:/root/.aspnet/dev-certs/https/aspnetcore-localhost-C6378A2CACE83E5FE709F97D185FE61FAFFA685D.pfx:ro

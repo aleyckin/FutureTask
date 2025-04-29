@@ -53,7 +53,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Web", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Description = "Введите токен с префиксом 'Bearer' в формате 'Bearer {token}'",
+        Description = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 'Bearer' пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 'Bearer {token}'",
         Name = "Authorization",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
@@ -100,7 +100,10 @@ builder.Services.AddSingleton<GigaChat>(provider =>
     );
 });
 
-
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(5050);
+});
 
 var app = builder.Build();
 
@@ -113,6 +116,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.ApplyMigrations();
 }
+
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -132,7 +137,7 @@ static async Task SeedDataAsync(IServiceProvider serviceProvider, CancellationTo
     var specializationService = scope.ServiceProvider.GetRequiredService<ISpecializationService>();
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-    // Инициализация специализации и администратора
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     await specializationService.SeedSpecializationUserAsync(cancellationToken);
     await userService.SeedAdminUserAsync(cancellationToken);
 }

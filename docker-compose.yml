@@ -9,7 +9,6 @@ services:
       dockerfile: Web/Dockerfile
     ports:
       - "5050:5050"
-      - "5051:5051"
   db:
     image: postgres:latest
     container_name: db
