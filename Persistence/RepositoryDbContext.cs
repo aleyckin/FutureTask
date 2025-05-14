@@ -14,6 +14,7 @@ namespace Persistance
         public DbSet<Domain.Entities.Task> Tasks { get; set; }
         public DbSet<Column> Columns { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<TaskMetrics> TaskMetrics { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
