@@ -15,6 +15,8 @@ using Services.Validators.TaskValidators;
 using LikhodedDynamics.Sber.GigaChatSDK;
 using Services;
 using Persistence;
+using QuestPDF;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -100,6 +102,7 @@ builder.Services.AddSingleton<GigaChat>(provider =>
     );
 });
 
+QuestPDF.Settings.License = LicenseType.Community;
 
 
 var app = builder.Build();

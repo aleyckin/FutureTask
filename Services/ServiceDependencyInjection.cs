@@ -22,6 +22,7 @@ namespace Services
             services.AddScoped<IColumnService, ColumnService>();
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IMetricsService, MetricsService>();
             services.AddScoped<IValidatorManager, ValidatorManager>();
 
             services.AddAutoMapper(typeof(AssemblyReference));

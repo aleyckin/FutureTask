@@ -4,6 +4,7 @@ using Domain.RepositoryInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
+using Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,13 @@ namespace Presentation.Controllers
     [ApiController]
     public class MetricsController : ControllerBase
     {
+        private readonly IMetricsService _metricsService;
         private readonly IMetricsRepository _metricsRepository;
-        public MetricsController(IMetricsRepository metricsRepository)
+
+        public MetricsController(IMetricsRepository metricsRepository, IMetricsService metricsService)
         {
             _metricsRepository = metricsRepository;
+            _metricsService = metricsService;
         }
 
         [HttpPost("task")]
@@ -47,6 +51,26 @@ namespace Presentation.Controllers
 
             await _metricsRepository.AddAsync(entity);
             return Ok();
+        }
+
+        [HttpGet("ReportForProject/{projectId:guid}")]
+        public async Task<IActionResult> GetProjectReport([FromRoute] Guid projectId)
+        {
+            byte[] pdfBytes = await _metricsService.GetReportForProject(projectId);
+            return File(pdfBytes, "application/pdf", $"Report_{projectId}.pdf");
+        }
+
+        [HttpGet("ReportForUser")]
+        public async Task<IActionResult> GetUserReport()
+        {
+            var userIdClaim = User.FindFirst("userId");
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+            Guid userId = Guid.Parse(userIdClaim.Value);
+            byte[] pdfBytes = await _metricsService.GetReportForUser(userId);
+            return File(pdfBytes, "application/pdf", $"Report_{userId}.pdf");
         }
     }
 }
