@@ -20,6 +20,7 @@ namespace Persistence
             services.AddScoped<IColumnRepository, ColumnRepository>();
             services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IMetricsRepository, MetricsRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
