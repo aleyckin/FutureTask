@@ -86,6 +86,12 @@ namespace Services.Services
             return _mapper.Map<List<ProjectUsersDtoForListProjects>>(projects);
         }
 
+        public async Task<List<ProjectUsersDtoForListProjects>> GetAllProjectsAsAdmin(CancellationToken cancellationToken = default)
+        {
+            var projects = await _projectUsersRepository.GetAllProjectsAsAdmin(cancellationToken);
+            return _mapper.Map<List<ProjectUsersDtoForListProjects>>(projects);
+        }
+
         public async Task<List<ProjectUsersDtoForListUsers>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default)
         {
             var project = await _projectRepository.GetProjectByIdAsync(ProjectId, cancellationToken);

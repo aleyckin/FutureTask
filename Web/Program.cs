@@ -41,7 +41,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowVueApp",
         builder =>
         {
-            builder.WithOrigins("http://localhost:8080")
+            builder.WithOrigins(
+                "http://localhost:8080",
+                "https://strangely-healing-cankerworm.cloudpub.ru")
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                    .AllowCredentials();
@@ -55,7 +57,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Web", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Description = "Введите токен с префиксом 'Bearer' в формате 'Bearer {token}'",
+        Description = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 'Bearer' пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 'Bearer {token}'",
         Name = "Authorization",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
@@ -89,9 +91,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorization();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
-builder.Services.AddSingleton<GigaChat>(provider =>
+builder.Services.AddScoped<GigaChat>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
     return new GigaChat(
@@ -104,7 +107,6 @@ builder.Services.AddSingleton<GigaChat>(provider =>
 
 QuestPDF.Settings.License = LicenseType.Community;
 
-
 var app = builder.Build();
 
 app.UseCors("AllowVueApp");
@@ -114,9 +116,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.ApplyMigrations();
 }
 
+app.ApplyMigrations();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -135,7 +137,7 @@ static async Task SeedDataAsync(IServiceProvider serviceProvider, CancellationTo
     var specializationService = scope.ServiceProvider.GetRequiredService<ISpecializationService>();
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-    // Инициализация специализации и администратора
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     await specializationService.SeedSpecializationUserAsync(cancellationToken);
     await userService.SeedAdminUserAsync(cancellationToken);
 }

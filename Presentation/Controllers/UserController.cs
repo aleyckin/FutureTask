@@ -25,7 +25,6 @@ namespace Presentation.Controllers
             _projectUsersService = projectUsersService;
         }
 
-        [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<ActionResult<List<UserDto>>> GetUsers(CancellationToken cancellationToken)
         {
@@ -64,10 +63,10 @@ namespace Presentation.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpGet("projectUsers/projectsFor:{userId:guid}")]
-        public async Task<ActionResult<List<ProjectUsersDtoForListProjects>>> GetAllProjectsForUser(Guid userId, CancellationToken cancellationToken)
+        [HttpGet("projectUsers/projects")]
+        public async Task<ActionResult<List<ProjectUsersDtoForListProjects>>> GetAllProjectsAsAdmin(CancellationToken cancellationToken)
         {
-            return await _projectUsersService.GetAllProjectsByUser(userId, cancellationToken);
+            return await _projectUsersService.GetAllProjectsAsAdmin(cancellationToken);
         }
 
         [Authorize]

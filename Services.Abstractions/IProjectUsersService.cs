@@ -14,6 +14,7 @@ namespace Services.Abstractions
     {
         Task<List<ProjectUsersDtoForListUsers>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default);
         Task<List<ProjectUsersDtoForListProjects>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default);
+        Task<List<ProjectUsersDtoForListProjects>> GetAllProjectsAsAdmin(CancellationToken cancellationToken = default);
         Task AddUserToProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default);
         Task UpdateUserRoleInProjectAsync(ProjectUsersDto projectUsersDto, CancellationToken cancellationToken = default);
         Task DeleteUserFromProjectAsync(Guid UserId, Guid ProjectId, CancellationToken cancellationToken = default);

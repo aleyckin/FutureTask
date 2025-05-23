@@ -18,7 +18,7 @@ namespace Services.Validators.TaskValidators
                 .When(task => task.Title != null);
 
             RuleFor(task => task.Description)
-                .MaximumLength(1000).WithMessage("The description must consist of less or equal to 500 characters.")
+                .MaximumLength(5000).WithMessage("The description must consist of less or equal to 500 characters.")
                 .When(task => task.Description != null);
 
             RuleFor(task => task.Priority)
