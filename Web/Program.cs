@@ -41,7 +41,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowVueApp",
         builder =>
         {
-            builder.WithOrigins("http://localhost:8080")
+            builder.WithOrigins(
+                "http://localhost:8080",
+                "https://strangely-healing-cankerworm.cloudpub.ru")
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                    .AllowCredentials();
@@ -89,9 +91,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorization();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
-builder.Services.AddSingleton<GigaChat>(provider =>
+builder.Services.AddScoped<GigaChat>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
     return new GigaChat(
@@ -103,7 +106,6 @@ builder.Services.AddSingleton<GigaChat>(provider =>
 });
 
 QuestPDF.Settings.License = LicenseType.Community;
-
 
 var app = builder.Build();
 
@@ -118,6 +120,7 @@ if (app.Environment.IsDevelopment())
 app.ApplyMigrations();
 app.UseRouting();
 
+app.ApplyMigrations();
 app.UseAuthentication();
 app.UseAuthorization();
 

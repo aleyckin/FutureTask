@@ -32,6 +32,15 @@ namespace Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
+        public Task<List<ProjectUsers>> GetAllProjectsAsAdmin(CancellationToken cancellationToken = default)
+        {
+            return _dbContext.ProjectUsers
+                .Include(x => x.Project)
+                .GroupBy(x => x.ProjectId)
+                .Select(g => g.First())
+                .ToListAsync(cancellationToken);
+        }
+
         public Task<ProjectUsers> GetProjectUser(Guid UserId, Guid ProjectId, CancellationToken  cancellationToken = default)
         {
             return _dbContext.ProjectUsers

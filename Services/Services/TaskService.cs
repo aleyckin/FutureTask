@@ -295,7 +295,7 @@ namespace Services.Services
                 return stringResponse;
             }
 
-            MessageQuery messageQuery = new MessageQuery(max_tokens: 2048L);
+            MessageQuery messageQuery = new MessageQuery(max_tokens: 8192L);
             MessageContent messageContent;
             foreach (var message in task.ContextMessages)
             {

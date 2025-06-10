@@ -11,6 +11,7 @@ namespace Domain.RepositoryInterfaces
     {
         Task<List<ProjectUsers>> GetAllUsersByProject(Guid ProjectId, CancellationToken cancellationToken = default);
         Task<List<ProjectUsers>> GetAllProjectsByUser(Guid UserId, CancellationToken cancellationToken = default);
+        Task<List<ProjectUsers>> GetAllProjectsAsAdmin(CancellationToken cancellationToken = default);
         Task<ProjectUsers> GetProjectUser(Guid UserId, Guid ProjectId, CancellationToken cancellationToken = default);
         void Insert(ProjectUsers projectUsers);
         void Remove(ProjectUsers projectUsers);
